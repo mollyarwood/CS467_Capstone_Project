@@ -1,0 +1,9 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+# [START handlers]
+handlers:
+- url: /.*
+  #static_files: www/login.html
+  script: test_sessions.app
+# [END handlers]
