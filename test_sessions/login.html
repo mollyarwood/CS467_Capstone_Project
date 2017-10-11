@@ -4,22 +4,24 @@
   <head>
     <meta charset="UTF-8">
     <title>Login</title>
-	<script async src="/js/base.js"></script>
+	<!-- <script async src="/js/base.js"></script> -->
   </head>
   <body>
   <h2>Login Page</h2>
+  
   <div>
-	<form onsubmit="return false;">
-        <h2>Login</h2>
-        <div><label for="username">username</label><input id="username" /></div>
-		<div><label for="password">password</label><input id="password" /></div>
+	<form action="" method="post">
+        <h4>Login</h4>
+		<div>{{message}}</div>
+        <div><label for="username">username</label><input name="username" id="username" /></div>
+		<div><label for="password">password</label><input name="password" id="password" /></div>
         <div><input id="getCredentials" type="submit" class="btn btn-small" value="Submit"></div>
     </form>
-  <script>
-    function init() {
-        google.appengine.samples.hello.init('//' + window.location.host + '/_ah/api');
-    }
-  </script>
+  <!-- <script> -->
+    <!-- function init() { -->
+        <!-- google.appengine.samples.hello.init('//' + window.location.host + '/_ah/api'); -->
+    <!-- } -->
+  <!-- </script> -->
   </body>
 </html>
 
