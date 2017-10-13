@@ -47,31 +47,49 @@ class MyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+class AccountCollectionHandler(session_handler.BaseHandler):
 	
+	def get(self):
+		query = Account.query()
+		for account in query:
+			account = account.to_dict()
+			self.response.write(json.dumps(account, cls=MyEncoder))
+			self.response.write('\n')
+			
 # This is the AccountHandler. It handles the post, patch, get
 # and delete functions. It returns the JSON of the entity upon 
 # success, or an error message if the ID is not found.
 class AccountHandler(session_handler.BaseHandler):
 
-	def post(self):
+	def post(self, body):
+	
+		if body:
+			account_data = body
+		else:
+			account_data = json.loads(self.request.body)
+			
+		username_already_exists = Account.query(Account.username == account_data['username']).get()
 		
-		account_data = json.loads(self.request.body)
-		
-		new_account = Account(username=account_data["username"],
-		password=account_data["password"],
-		creation_date=datetime.datetime.now(), 
-		last_modified=datetime.datetime.now())
-		
-		if 'name' in account_data:
-			new_account.name = account_data['name']
-		if 'account_type' in account_data:
-			new_account.account_type =account_data['account_type']
-		new_account.put()
-		new_account.id = new_account.key.urlsafe()
-		new_account.put()
-		account_dict = new_account.to_dict()
-		
-		self.response.write(json.dumps(account_dict, cls=MyEncoder))
+		# USERNAMES MUST BE UNIQUE ACROSS ACCOUNTS
+		if username_already_exists:
+			return False
+		else:
+			new_account = Account(username=account_data["username"],
+			password=account_data["password"],
+			account_type=account_data['account_type'],
+			creation_date=datetime.datetime.now(), 
+			last_modified=datetime.datetime.now())
+			
+			if 'name' in account_data:
+				new_account.name = account_data['name']
+
+			new_account.put()
+			new_account.id = new_account.key.urlsafe()
+			new_account.put()
+			account_dict = new_account.to_dict()
+			
+			# self.response.write(json.dumps(account_dict, cls=MyEncoder))
+			return True
 		#return json.dumps(account_dict, cls=MyEncoder)
 	
 
