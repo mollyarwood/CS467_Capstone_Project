@@ -25,9 +25,9 @@ class LoginPage(session_handler.BaseHandler):
 		self.render_template('login.html')
 
 	#post will send the username and password to the datastore
-	#if the user exists and password is correct, a session is 
-	#created and user directed to home page based on their 
-	#account type. else, error message.
+	#if the user exists and password is correct, the user will
+	#be redirected to the home page, where he/she gets a session
+	#token. else, they get an error message returned. 
 	def post(self):
 		username_entered = self.request.get('username')
 		password_entered = self.request.get('password')
@@ -35,7 +35,9 @@ class LoginPage(session_handler.BaseHandler):
 		for entity in create_entities.Account.query():
 			if entity.username == username_entered:
 				if entity.password == password_entered:
-					#CREATE SESSION HERE SO REDIRECT TO CORRECT SPOT
+					#CREATE USER SESSION HERE SO REDIRECT TO CORRECT SPOT
+					self.session['user'] = entity.username
+					self.session['password'] = entity.password
 					self.redirect('/home')
 				else:
 					self.response.out.write("The password or username entered is incorrect")
@@ -49,15 +51,15 @@ class LoginPage(session_handler.BaseHandler):
 class HomePage(session_handler.BaseHandler):
 	def get(self):
 
-		#set this to username?
-		self.session['user'] = "test"
+		#get username from db
 		session = self.session.get('user')
 		if session == None:
 			self.redirect('/login')
 		else:
 			self.response.write("home page")
 			self.response.write("\n\n")
-			self.response.write("welcome to the home page\n")
+			self.response.write("welcome to the home page \n")
+			self.response.write(session)
 # [END main_page]
 
 
