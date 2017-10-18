@@ -7,6 +7,7 @@ import json
 from webapp2_extras import jinja2
 import session_handler
 from google.appengine.ext import ndb
+from google.appengine.api import mail
 
 
 
@@ -70,7 +71,58 @@ class UserHomePage(session_handler.BaseHandler):
 				self.render_template('userHome.html')
 			elif type == 'admin':
 				self.redirect('/adminHome')
+				
+				
+	def post(self):
+		req = self.request.get('logout')
+		
+		if req == 'Logout':
+			self.redirect('/login')
+			self.session.clear()
+		
+		req = self.request.get('sendAward')
+		if req == 'Send an Award':
+			self.redirect('/sendAward')
 # [END main_page]
+
+
+class SendAwardPage(session_handler.BaseHandler):
+
+	def get(self):
+		#get username from db
+		username = self.session.get('user')
+		type = self.session.get('account_type')
+		if username == None:
+			self.redirect('/login')
+		else:
+			if type == 'user':
+				self.render_template('sendAward.html')
+			elif type == 'admin':
+				self.redirect('/adminHome')
+				
+				
+	def post(self):
+		# Send email via mail.send_mail() method
+		recipient_name = self.request.get('name')
+		recipient_email = self.request.get('email')
+		award_type = self.request.get('award_type')
+		sender = self.session.get('user')
+		self.response.write("award sent")
+		mail.send_mail(sender=sender,
+                   to=recipient_email,
+                   subject="Congratulations " + recipient_name + "! You received an award!",
+                   body="See attachment.")
+				   
+		# Store award in NBD
+		ah = create_entities.AwardHandler()
+		body = dict()
+		body['sender'] = sender
+		body['recipient_email'] = recipient_email
+		body['recipient_name'] = recipient_name
+		body['award_type'] = award_type
+		create_entities.AwardHandler.post(ah, body)
+				   
+		
 
 
 class AdminHomePage(session_handler.BaseHandler):
@@ -124,12 +176,8 @@ class AccountManagementPage(session_handler.BaseHandler):
 		body['username'] = self.request.get('username')
 		body['password'] = self.request.get('password')
 		body['account_type'] = self.request.get('account_type')
-		# self.response.write(body)
 		create_entities.AccountHandler.post(ah, body)
-		# username_entered = self.request.get('username')
-		# password_entered = self.request.get('password')
-		# boat_data = json.loads(self.request.body)
-		
+
 # [START app]
 app = webapp2.WSGIApplication([
 	('/login', LoginPage),
@@ -138,6 +186,7 @@ app = webapp2.WSGIApplication([
 	('/account', create_entities.AccountHandler),
 	('/account/(.*)', create_entities.AccountHandler),
 	('/accounts', create_entities.AccountCollectionHandler),
-	('/accountManagement', AccountManagementPage)
+	('/awards', create_entities.AwardCollectionHandler),
+	('/accountManagement', AccountManagementPage),
+	('/sendAward', SendAwardPage)
 ], config=config, debug=True)
-# [END app]
