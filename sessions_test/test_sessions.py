@@ -178,6 +178,17 @@ class AccountManagementPage(session_handler.BaseHandler):
 		body['account_type'] = self.request.get('account_type')
 		create_entities.AccountHandler.post(ah, body)
 
+
+
+
+#allow webapp2 to do a patch request
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
+
+
+
+
 # [START app]
 app = webapp2.WSGIApplication([
 	('/login', LoginPage),
