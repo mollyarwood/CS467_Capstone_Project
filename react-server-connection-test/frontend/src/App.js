@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import ReactSpinner from 'react-spinjs';
 
 import Login from './Login';
 import NormalHome from './NormalHome';
@@ -44,7 +45,7 @@ class App extends Component {
 
   render() {
     if (this.state.loading) {
-      return <div><h1>LOADING...</h1></div>;
+      return <ReactSpinner config={{ width: 5, radius: 18 }}/>;
     } else if (this.state.loggedIn && this.state.userType === "admin") {
       return <AdminHome logOut={this.logOut} />;
     } else if (this.state.loggedIn && this.state.userType === "normal") {
