@@ -3,7 +3,10 @@ import React, {Component} from 'react';
 class NormalHome extends Component {
   render() {
     return (
-      <div>Normal</div>
+      <div>
+        <h1>User</h1>
+        <button onClick={this.props.logOut}>Log Out</button>
+      </div>
     );
   }
 }
