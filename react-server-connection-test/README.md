@@ -11,10 +11,11 @@ Navigate to the  `/frontend` folder
 Run:
 - `npm install`
 - `npm run build`
+While this is running, changes to the frontend will be automatically bundled
 
-Navigate to the `/` folder
-
+In a separate terminal, navigate to the `/` folder
 Run:
 - `dev_appserver.py app.yaml`
+While this is running, changes to the server will automatically be applied
 
 View at http://localhost:8080
