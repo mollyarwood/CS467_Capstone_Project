@@ -4,8 +4,8 @@ threadsafe: true
 
 handlers:
 - url: /
-  static_files: frontend/build/index.html
-  upload: frontend/build/index.html
+  static_files: frontend/public/index.html
+  upload: frontend/public/index.html
 
 - url: /auth
   script: main.app
@@ -14,4 +14,4 @@ handlers:
   script: main.app
 
 - url: /
-  static_dir: frontend/build
+  static_dir: frontend/public
