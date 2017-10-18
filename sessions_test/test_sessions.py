@@ -178,6 +178,20 @@ class AccountManagementPage(session_handler.BaseHandler):
 		body['account_type'] = self.request.get('account_type')
 		create_entities.AccountHandler.post(ah, body)
 
+<<<<<<< HEAD
+=======
+
+
+
+#allow webapp2 to do a patch request
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
+
+
+
+
+>>>>>>> c150ba517bd38d744e16c2a19fc521321271f0aa
 # [START app]
 app = webapp2.WSGIApplication([
 	('/login', LoginPage),
@@ -189,5 +203,9 @@ app = webapp2.WSGIApplication([
 	('/awards', create_entities.AwardCollectionHandler),
 	('/accountManagement', AccountManagementPage),
 	('/sendAward', SendAwardPage)
+<<<<<<< HEAD
 ], config=config, debug=True)
 # [END app]
+=======
+], config=config, debug=True)
+>>>>>>> c150ba517bd38d744e16c2a19fc521321271f0aa

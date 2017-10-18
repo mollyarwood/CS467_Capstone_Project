@@ -21,7 +21,11 @@ class Account(ndb.Model):
 	username = ndb.StringProperty(required=True)
 	password = ndb.StringProperty(required=True)
 	name = ndb.StringProperty()
+<<<<<<< HEAD
 	account_type = ndb.StringProperty()
+=======
+	account_type = ndb.StringProperty(required=True)
+>>>>>>> c150ba517bd38d744e16c2a19fc521321271f0aa
 	creation_date = ndb.DateTimeProperty(auto_now_add=True )
 	last_modified = ndb.DateTimeProperty(auto_now=True)
 	signature = ndb.BlobProperty()
@@ -74,7 +78,7 @@ class AwardCollectionHandler(session_handler.BaseHandler):
 # success, or an error message if the ID is not found.
 class AccountHandler(session_handler.BaseHandler):
 
-	def post(self, body):
+	def post(self, body=None):
 	
 		if body:
 			account_data = body
@@ -123,7 +127,7 @@ class AccountHandler(session_handler.BaseHandler):
 					account.signature = account_data['signature']
 								
 				account.put()
-				return json.dumps(account.to_dict())
+				return json.dumps(account.to_dict(), cls=MyEncoder)
 				# self.response.write(json.dumps(account.to_dict()))
 			else:
 				return "Error: accound ID not found"
