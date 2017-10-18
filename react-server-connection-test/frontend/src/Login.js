@@ -17,7 +17,7 @@ class Login extends Component {
     axios.post('/auth', { username, password })
       .then((response) => {
         if (response.data.loggedIn) {
-          this.props.onLogIn(response.data);
+          this.props.setLoggedIn(response.data);
         } else {
           this.setState({
             errors: response.data.errors

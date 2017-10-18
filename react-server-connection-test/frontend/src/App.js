@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.onLogIn = this.onLogIn.bind(this);
+    this.setLoggedIn = this.setLoggedIn.bind(this);
     this.logOut = this.logOut.bind(this);
 
     this.state = {
@@ -20,16 +20,13 @@ class App extends Component {
   componentWillMount() {
     axios.get('/auth').then((response) => {
       if (response.data.loggedIn) {
-        this.setState({
-          loggedIn: true,
-          userType: response.data.userType
-        });
+        this.setLoggedIn(response.data);
       }
       this.setState({ loading: false });
     })
   }
 
-  onLogIn(responseData) {
+  setLoggedIn(responseData) {
     this.setState({
       loggedIn: true,
       userType: responseData.userType,
@@ -53,7 +50,7 @@ class App extends Component {
     } else if (this.state.loggedIn && this.state.userType === "normal") {
       return <NormalHome logOut={this.logOut} />;
     } else {
-      return <Login onLogIn={this.onLogIn} />;
+      return <Login setLoggedIn={this.setLoggedIn} />;
     }
   }
 }
