@@ -9,18 +9,15 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.checkIfLoggedIn = this.checkIfLoggedIn.bind(this);
     this.logIn = this.logIn.bind(this);
     this.logout = this.logout.bind(this);
 
     this.state = {
       loading: true
     };
-
-    this.checkIfLoggedIn();
   }
 
-  checkIfLoggedIn() {
+  componentWillMount() {
     axios.get('/auth').then((response) => {
       if(response.data.loggedIn) {
         this.setState({
