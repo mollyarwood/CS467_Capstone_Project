@@ -10,7 +10,7 @@ class App extends Component {
     super(props);
 
     this.logIn = this.logIn.bind(this);
-    this.logout = this.logout.bind(this);
+    this.logOut = this.logOut.bind(this);
 
     this.state = {
       loading: true
@@ -49,7 +49,7 @@ class App extends Component {
     })
   }
 
-  logout() {
+  logOut() {
     axios.get('/logout').then((response) => {
       this.setState({
         loggedIn: false,
@@ -62,9 +62,9 @@ class App extends Component {
     if(this.state.loading) {
       return <div><h1>LOADING...</h1></div>;
     } else if(this.state.loggedIn && this.state.userType === "admin") {
-      return <AdminHome logout={this.logout} />;
+      return <AdminHome logOut={this.logOut} />;
     } else if(this.state.loggedIn && this.state.userType === "normal") {
-      return <NormalHome logout={this.logout} />;
+      return <NormalHome logOut={this.logOut} />;
     } else {
       return <Login logIn={this.logIn} errors={this.state.errors}/>;
     }

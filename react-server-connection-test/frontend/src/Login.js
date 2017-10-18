@@ -13,7 +13,7 @@ class Login extends Component {
   render() {
     return (
     <div>
-      <h1>login</h1>
+      <h1>Log In</h1>
       {this.renderErrors()}
       <form onSubmit={this.props.logIn}>
         <div>Username: <input type="text" name="username" /></div>

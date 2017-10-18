@@ -5,7 +5,7 @@ class AdminHome extends Component {
     return (
       <div>
         <h1>Admin</h1>
-        <button onClick={this.props.logout}>Logout</button>
+        <button onClick={this.props.logOut}>Log Out</button>
       </div>
     );
   }
