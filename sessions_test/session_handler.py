@@ -32,4 +32,3 @@ class BaseHandler(webapp2.RequestHandler):
     @webapp2.cached_property
     def jinja2(self):
         return jinja2.get_jinja2(app=self.app)
-

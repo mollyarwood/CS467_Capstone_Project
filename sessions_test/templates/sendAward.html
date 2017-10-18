@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Send an Award</title>
+  </head>
+  <body>
+  <h2>Send an Award</h2>
+  
+  <div>
+	<form action="" method="post">
+	<div>
+            <label for="name">Recipient Name</label><input name="name" id="name" />
+          </div>
+          <div>
+            <label for="email">Recipient's Email Address</label><input name="email" id="email" />
+          </div>
+		  <div>
+			  <input type="radio" name="award_type" value="admin"> Employee of the Month<br>
+			  <input type="radio" name="award_type" value="user"> Most Appreciated Employee<br>
+          </div>
+          <div>
+            <input id="createAccount" type="submit" class="btn btn-small" value="Send Award">
+          </div>
+    </form>
+  </div>
+  <script src="https://apis.google.com/js/client.js?onload=init"></script>
+  </body>
+</html>
