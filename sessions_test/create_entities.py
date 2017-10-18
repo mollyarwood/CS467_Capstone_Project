@@ -123,7 +123,7 @@ class AccountHandler(session_handler.BaseHandler):
 					account.signature = account_data['signature']
 								
 				account.put()
-				return json.dumps(account.to_dict())
+				return json.dumps(account.to_dict(), cls=MyEncoder)
 				# self.response.write(json.dumps(account.to_dict()))
 			else:
 				return "Error: accound ID not found"
