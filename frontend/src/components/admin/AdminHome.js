@@ -8,7 +8,7 @@ class AdminHome extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      currentPage: 'BussinessIntelligence' // home, edit account, send award
+      currentPage: 'BussinessIntelligence'
     });
 
     this.changePage = this.changePage.bind(this);

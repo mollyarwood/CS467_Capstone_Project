@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import AddUserAccount from './AddUserAccount';
+
 class ManageUserAccounts extends Component {
   constructor(props) {
       super(props);
@@ -39,17 +41,12 @@ class ManageUserAccounts extends Component {
 
   render() {
     if (this.state.currentPage === 'add') {
-      return (
-        <div>
-          <h3>Add user</h3>
-          <button className="btn" name='view' onClick={this.changePage}>Cancel</button>
-        </div>
-      );
+      return <AddUserAccount changePage={this.changePage} />;
     } else if (this.state.currentPage === 'edit') {
       return (
         <div>
           <h3>Edit user</h3>
-          <button className="btn" name='view' onClick={this.changePage}>Cancel</button>
+          <button className="btn" name='view' changePage={this.changePage}>Cancel</button>
         </div>
       );
     } else if (this.state.currentPage === 'view') {
@@ -63,22 +60,22 @@ class ManageUserAccounts extends Component {
           <table className="table">
             <thead>
               <tr className="row">
-                <th className="col-md-4">Username</th>
-                <th className="col-md-4">Name</th>
-                <th className="col-md-4">Actions</th>
+                <th className="col-md-5">Username</th>
+                <th className="col-md-5">Name</th>
+                <th className="col-md-2">Actions</th>
               </tr>
             </thead>
             <tbody>
               {this.state.users.map( user =>
                 <tr className="row" key={user.id}>
-                  <td className="col-md-4">{user.name}</td>
-                  <td className="col-md-4">{user.name}</td>
-                  <td className="col-md-2">
-                    <button id={user.id} className="btn btn-danger" name="edit" onClick={this.changePage}>
+                  <td className="col-md-5">{user.name}</td>
+                  <td className="col-md-5">{user.name}</td>
+                  <td className="col-md-1">
+                    <button id={user.id} className="btn btn-default" name="edit" onClick={this.changePage}>
                       Edit
                     </button>
                   </td>
-                  <td className="col-md-2">
+                  <td className="col-md-1">
                     <button id={user.id} className="btn btn-danger" onClick={this.deleteUser}>
                       Delete
                     </button>

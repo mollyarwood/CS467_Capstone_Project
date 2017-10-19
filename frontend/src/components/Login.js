@@ -46,7 +46,7 @@ class Login extends Component {
         {this.renderErrors()}
         <form className="col-md-4 col-md-offset-4" onSubmit={this.logIn}>
           <div className="form-group row">
-            <label htmlFor="userName" className="col-form-label">User Name</label>
+            <label htmlFor="username" className="col-form-label">Username</label>
             <input className="form-control" type="text" name="username" />
           </div>
           <div className="form-group row">

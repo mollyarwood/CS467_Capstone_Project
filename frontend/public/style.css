@@ -14,3 +14,7 @@ body {
 .spacer {
   margin-top: 25px;
 }
+
+.spacer-bottom {
+  margin-bottom: 25px; 
+}

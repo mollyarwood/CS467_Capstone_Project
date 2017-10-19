@@ -45,7 +45,7 @@ class App extends Component {
 
   render() {
     if (this.state.loading) {
-      return <ReactSpinner config={{ width: 5, radius: 18 }}/>;
+      return <ReactSpinner config={{ width: 5, radius: 18 }} />;
     } else if (this.state.loggedIn && this.state.userType === "admin") {
       return <AdminHome logOut={this.logOut} />;
     } else if (this.state.loggedIn && this.state.userType === "user") {
