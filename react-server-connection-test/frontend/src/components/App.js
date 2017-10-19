@@ -3,8 +3,8 @@ import axios from 'axios';
 import ReactSpinner from 'react-spinjs';
 
 import Login from './Login';
-import NormalHome from './NormalHome';
-import AdminHome from './AdminHome';
+import UserHome from './user/UserHome';
+import AdminHome from './admin/AdminHome';
 
 class App extends Component {
   constructor(props) {
@@ -48,8 +48,8 @@ class App extends Component {
       return <ReactSpinner config={{ width: 5, radius: 18 }}/>;
     } else if (this.state.loggedIn && this.state.userType === "admin") {
       return <AdminHome logOut={this.logOut} />;
-    } else if (this.state.loggedIn && this.state.userType === "normal") {
-      return <NormalHome logOut={this.logOut} />;
+    } else if (this.state.loggedIn && this.state.userType === "user") {
+      return <UserHome logOut={this.logOut} />;
     } else {
       return <Login setLoggedIn={this.setLoggedIn} />;
     }
