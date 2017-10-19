@@ -73,7 +73,7 @@ class UserHome extends Component {
         <div className="row">
           <div className="col-md-11"><h1>User Home</h1></div>
           <div className="col-md-1 pull-right">
-            <button className="btn btn-primary" onClick={this.props.onLogOut}>Log Out</button>
+            <button className="btn btn-primary" onClick={this.props.logOut}>Log Out</button>
           </div>
         </div>
 

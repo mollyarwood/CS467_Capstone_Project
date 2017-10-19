@@ -8,7 +8,7 @@ class AdminHome extends Component {
         <div><button>Manage User Accounts</button></div>
         <div><button>Manage Admin Accounts</button></div>
         <div><button>Business Intelligence</button></div>
-        <div><button onClick={this.props.onLogOut}>Log Out</button></div>
+        <div><button onClick={this.props.logOut}>Log Out</button></div>
       </div>
     );
   }
