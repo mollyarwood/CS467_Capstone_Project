@@ -5,7 +5,7 @@ class SendAward extends Component {
     return(
       <div>
         <h1>Send Award</h1>
-        
+
       </div>
     );
   }

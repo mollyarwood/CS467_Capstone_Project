@@ -1,0 +1,17 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /
+  static_files: frontend/public/index.html
+  upload: frontend/public/index.html
+
+- url: /auth
+  script: main.app
+
+- url: /logout
+  script: main.app
+
+- url: /
+  static_dir: frontend/public

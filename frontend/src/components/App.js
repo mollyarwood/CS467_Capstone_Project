@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import ReactSpinner from 'react-spinjs';
 
 import Login from './Login';
-import FirstTimeLogin from './FirstTimeLogin';
 import UserHome from './user/UserHome';
 import AdminHome from './admin/AdminHome';
 
@@ -9,87 +10,48 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      loggedIn: false,
-      errors: []
-    };
-
-    this.logIn = this.logIn.bind(this);
+    this.setLoggedIn = this.setLoggedIn.bind(this);
     this.logOut = this.logOut.bind(this);
-    this.firstTimeLogin = this.firstTimeLogin.bind(this);
-    this.renderLoggedIn = this.renderLoggedIn.bind(this);
+
+    this.state = {
+      loading: true
+    };
   }
 
-  logIn(event) {
-    event.preventDefault();
-    const errors = [];
-    const userName = event.target.userName.value;
-    const password = event.target.password.value;
-    if (userName.length === 0) {
-      errors.push('User name cannot be blank');
-    }
-    if (password.length === 0) {
-       errors.push('password cannot be blank')
-    }
-
-    if (errors.length === 0) {
-      // Authenticate user with server here, the following is mostly dummy data
-      if (userName === 'admin') {
-        this.setState({
-          loggedIn: true,
-          userType: 'admin',
-          errors
-        });
-      } else if (userName === 'normal') {
-        this.setState({
-          loggedIn: true,
-          userType: 'normal',
-          errors
-        });
-      } else if (userName === 'firstTime') {
-        this.setState({
-          loggedIn: true,
-          userType: 'normal',
-          firstTimeLogin: true,
-          errors
-        });
-      } else {
-        errors.push('Incorrect user name or password');
-        this.setState({ errors });
+  componentWillMount() {
+    axios.get('/auth').then((response) => {
+      if (response.data.loggedIn) {
+        this.setLoggedIn(response.data);
       }
-    } else {
-      this.setState({ errors });
-    }
+      this.setState({ loading: false });
+    })
+  }
+
+  setLoggedIn(responseData) {
+    this.setState({
+      loggedIn: true,
+      userType: responseData.userType,
+    });
   }
 
   logOut() {
-    this.setState({
-      loggedIn: false,
-      userType: null
-    });
-  }
-
-  firstTimeLogin() {
-    this.setState({
-      firstTimeLogin: false
-    });
-  }
-
-  renderLoggedIn() {
-    if(this.state.firstTimeLogin) {
-      return <FirstTimeLogin firstTimeLogin={this.firstTimeLogin} />;
-    } else if(this.state.userType === 'normal') {
-      return (<UserHome onLogOut={this.logOut} />);
-    } else if(this.state.userType === 'admin') {
-      return (<AdminHome onLogOut={this.logOut} />);
-    }
+    axios.get('/logout').then((response) => {
+      this.setState({
+        loggedIn: false,
+        userType: null
+      });
+    })
   }
 
   render() {
-    if(this.state.loggedIn) {
-      return this.renderLoggedIn();
+    if (this.state.loading) {
+      return <ReactSpinner config={{ width: 5, radius: 18 }} />;
+    } else if (this.state.loggedIn && this.state.userType === "admin") {
+      return <AdminHome logOut={this.logOut} />;
+    } else if (this.state.loggedIn && this.state.userType === "user") {
+      return <UserHome logOut={this.logOut} />;
     } else {
-      return <Login errors={this.state.errors} logIn={this.logIn} />
+      return <Login setLoggedIn={this.setLoggedIn} />;
     }
   }
 }

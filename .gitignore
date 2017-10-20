@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+# Javascript Relatated
+# node_modules
+node_modules/
+
+bundle.js
