@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 import AddUserAccount from './AddUserAccount';
 
@@ -8,14 +9,6 @@ class ManageUserAccounts extends Component {
       this.state = {
         currentPage: 'view',
         users: [
-          {
-            id: 1,
-            name: 'User1',
-          },
-          {
-            id: 2,
-            name: 'User2',
-          }
         ]
       }
 
@@ -23,12 +16,25 @@ class ManageUserAccounts extends Component {
       this.changePage = this.changePage.bind(this);
   }
 
+  componentWillMount() {
+    axios.get('/test').then((response) => {
+      if (response.data.users) {
+        this.setState({
+          users: response.data.users
+        });
+      }
+    });
+  }
+
   deleteUser(event) {
     const userId = parseInt(event.target.id, 10);
-    const newUserList = this.state.users
-      .filter(user => user.id !== userId);
-    this.setState({
-      users: newUserList
+
+    axios.delete('/test').then((response) => {
+      const newUserList = this.state.users
+        .filter(user => user.id !== userId);
+      this.setState({
+        users: newUserList
+      });
     });
   }
 
@@ -53,7 +59,7 @@ class ManageUserAccounts extends Component {
       return (
         <div>
           <div>
-            <button className="btn btn-primary" name="add" onClick={this.changePage}>
+            <button className="btn btn-primary spacer-bottom" name="add" onClick={this.changePage}>
               Add User
             </button>
           </div>
