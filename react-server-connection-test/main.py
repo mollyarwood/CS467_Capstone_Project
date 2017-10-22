@@ -1,13 +1,19 @@
+import os
 import webapp2
 import session_handler
 import create_entities
 import json
 import yaml
+import binascii
 import logging
+
+
+#generate random string for the session
+key = binascii.hexlify(os.urandom(24))
 
 config = {}
 config['webapp2_extras.sessions'] = {
-    'secret_key': 'my-super-secret-key',
+    'secret_key': key,
 }
 
 class AuthHandler(session_handler.BaseHandler):
@@ -31,11 +37,8 @@ class AuthHandler(session_handler.BaseHandler):
         logging.info(self.request.body)
         username_entered = str(post_data['username'])
         password_entered = str(post_data['password'])
-
-        # A real check to database for user goes here, this is placeholder
-        # if username == "admin" and password == "pass":
-            # userType = 'admin'
-        # End of place holder
+		
+		
         for entity in create_entities.Account.query():
             logging.info(entity)
             if entity.username == username_entered:
@@ -47,7 +50,7 @@ class AuthHandler(session_handler.BaseHandler):
 
                     self.response.write(json.dumps({
 	                    "loggedIn": True,
-	                    "userType": "user"
+	                    "userType": entity.account_type
                     }))
 					
 		
@@ -65,11 +68,5 @@ class LogoutHandler(session_handler.BaseHandler):
 app = webapp2.WSGIApplication([
 	('/auth', AuthHandler),
     ('/logout', LogoutHandler)
-	# ('/accountManagement', AccountManagement)
-	# ('/account(.*)', create_entities.AccountHandler),
-	# ('/accounts', create_entities.AccountCollectionHandler),
-	# ('/awards', create_entities.AwardCollectionHandler),
-	# ('/(.*)', create_entities.AccountHandler),
-	# ('/(.*)', create_entities.AwardHandler)
 ], config=config, debug=True)
 # [END app]

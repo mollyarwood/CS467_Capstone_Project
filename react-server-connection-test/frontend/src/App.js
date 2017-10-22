@@ -5,6 +5,7 @@ import Login from './Login';
 import NormalHome from './NormalHome';
 import AdminHome from './AdminHome';
 
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -41,15 +42,19 @@ class App extends Component {
       });
     })
   }
-
+  
+  
   render() {
     if (this.state.loading) {
       return <div><h1>LOADING...</h1></div>;
-    } else if (this.state.loggedIn && this.state.userType === "admin") {
+    }  
+	else if (this.state.loggedIn && this.state.userType === "admin") {
       return <AdminHome logOut={this.logOut} />;
-    } else if (this.state.loggedIn && this.state.userType === "normal") {
+    } 
+	else if (this.state.loggedIn && this.state.userType === "user") {
       return <NormalHome logOut={this.logOut} />;
-    } else {
+    } 
+	else {
       return <Login setLoggedIn={this.setLoggedIn} />;
     }
   }
