@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
-import BussinessIntelligence from './BussinessIntelligence';
-import ManageUserAccounts from './ManageUserAccounts';
-import ManageAdminAccounts from './ManageAdminAccounts';
+import SendAward from './SendAward';
+import ViewAwards from './ViewAwards';
+import EditAccount from './EditAccount';
 
-class AdminHome extends Component {
+class UserInterface extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      currentPage: 'BussinessIntelligence'
+      currentPage: 'ViewAwards' // home, edit account, send award
     });
 
     this.changePage = this.changePage.bind(this);
@@ -24,30 +24,30 @@ class AdminHome extends Component {
 
   renderCurrentPageContent() {
     switch(this.state.currentPage) {
-      case 'BussinessIntelligence':
-        return <BussinessIntelligence />;
-      case 'ManageUserAccounts':
-        return <ManageUserAccounts />;
-      case 'ManageAdminAccounts':
-        return <ManageAdminAccounts />;
+      case 'ViewAwards':
+        return <ViewAwards />;
+      case 'SendAward':
+        return <SendAward />;
+      case 'EditAccount':
+        return <EditAccount />;
       default:
-        return <div></div>;
+        return <ViewAwards />;
     }
   }
 
   createNavButtons() {
     const tabs = [
       {
-      text: 'Business Intelligence',
-      name: 'BussinessIntelligence'
+      text: 'View Awards',
+      name: 'ViewAwards'
       },
       {
-        text: 'Manage User Accounts',
-        name: 'ManageUserAccounts'
+        text: 'Send Award',
+        name: 'SendAward'
       },
       {
-        text: 'Manage Admin Accounts',
-        name: 'ManageAdminAccounts'
+        text: 'Edit Account',
+        name: 'EditAccount'
       }
     ];
 
@@ -71,7 +71,7 @@ class AdminHome extends Component {
     return (
       <div className="col-md-10 col-md-offset-1">
         <div className="row">
-          <div className="col-md-11 spacer-bottom"><h1>Admin Interface</h1></div>
+          <div className="col-md-11"><h1>User Home</h1></div>
           <div className="col-md-1 pull-right">
             <button className="btn btn-primary" onClick={this.props.logOut}>Log Out</button>
           </div>
@@ -90,4 +90,4 @@ class AdminHome extends Component {
 
 }
 
-export default AdminHome;
+export default UserInterface;
