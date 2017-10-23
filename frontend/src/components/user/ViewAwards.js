@@ -1,35 +1,35 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 class ViewAwards extends Component {
   constructor(props) {
       super(props);
-      // fetch user's recived awards from server
       this.state = {
-        awardsRecieved: [
-          {
-            id: 1,
-            name: 'Award1',
-            date: '11/12/2016',
-            givenBy: 'Person1'
-          },
-          {
-            id: 2,
-            name: 'Award2',
-            date: '5/24/2015',
-            givenBy: 'Person2'
-          }
-        ]
+        awardsRecieved: []
       }
 
       this.deleteAward = this.deleteAward.bind(this);
   }
 
+  componentWillMount() {
+    axios.get('/awards').then((response) => {
+      if (response.data.awards) {
+        this.setState({
+          awardsRecieved: response.data.awards
+        });
+      }
+    });
+  }
+
   deleteAward(event) {
     const awardId = parseInt(event.target.id, 10);
-    const newAwardsList = this.state.awardsRecieved
-      .filter(award => award.id !== awardId);
-    this.setState({
-      awardsRecieved: newAwardsList
+
+    axios.delete('/ROUTE-HERE').then((response) => {
+      const newAwardsList = this.state.awardsRecieved
+        .filter(award => award.id !== awardId);
+      this.setState({
+        awardsRecieved: newAwardsList
+      });
     });
   }
 
@@ -42,7 +42,8 @@ class ViewAwards extends Component {
             <tr className="row">
               <th className="col-md-4">Award</th>
               <th className="col-md-3">Date</th>
-              <th className="col-md-5">Given by</th>
+              <th className="col-md-4">Given by</th>
+              <th className="col-md-1">Actions</th>
 
             </tr>
           </thead>
@@ -51,10 +52,10 @@ class ViewAwards extends Component {
               <tr className="row" key={award.id}>
                 <td className="col-md-4">{award.name}</td>
                 <td className="col-md-3">{award.date}</td>
-                <td className="col-md-3">{award.givenBy}</td>
-                <td className="col-md-2">
+                <td className="col-md-4">{award.givenBy}</td>
+                <td className="col-md-1">
                   <button id={award.id} className="btn btn-danger" onClick={this.deleteAward}>
-                    X
+                    DELETE
                   </button>
                 </td>
               </tr>)}
