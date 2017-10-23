@@ -168,10 +168,10 @@ class AwardHandler(session_handler.BaseHandler):
 		else:
 			award_data = json.loads(self.request.body)
 
-		new_award = Award( \
-		sender=award_data["sender"], \
-		recipient_name=award_data["recipient_name"], \
-		recipient_email=award_data["recipient_email"], \
+		new_award = Award( 
+		sender=award_data["sender"],
+		recipient_name=award_data["recipient_name"],
+		recipient_email=award_data["recipient_email"],
 		award_type=award_data["award_type"])
 
 		new_award.put()

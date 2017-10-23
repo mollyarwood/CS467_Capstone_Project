@@ -21,7 +21,11 @@ class Account(ndb.Model):
 	username = ndb.StringProperty(required=True)
 	password = ndb.StringProperty(required=True)
 	name = ndb.StringProperty()
+<<<<<<< HEAD
+	account_type = ndb.StringProperty()
+=======
 	account_type = ndb.StringProperty(required=True)
+>>>>>>> c150ba517bd38d744e16c2a19fc521321271f0aa
 	creation_date = ndb.DateTimeProperty(auto_now_add=True )
 	last_modified = ndb.DateTimeProperty(auto_now=True)
 	signature = ndb.BlobProperty()
