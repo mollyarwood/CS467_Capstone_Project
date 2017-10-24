@@ -25,7 +25,7 @@ class Login extends Component {
             errors: [ response.data.errors ]
           });
         }
-    })
+      })
   }
 
   renderErrors() {

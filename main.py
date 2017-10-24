@@ -1,16 +1,25 @@
+import os
 import webapp2
 import session_handler
+import create_entities
 import json
 import yaml
+import binascii
+import logging
+
+
+#generate random string for the session
+key = binascii.hexlify(os.urandom(24))
 
 config = {}
 config['webapp2_extras.sessions'] = {
-    'secret_key': 'my-super-secret-key',
+    'secret_key': key,
 }
 
 class AuthHandler(session_handler.BaseHandler):
     # Checks if user is already logged in
     def get(self):
+        ah = create_entities.AccountHandler()
         session = self.session.get('user')
         if session == None:
             self.response.write(json.dumps({
@@ -25,30 +34,34 @@ class AuthHandler(session_handler.BaseHandler):
     # login handler
     def post(self):
         post_data = yaml.safe_load(self.request.body)
-        username = str(post_data['username'])
-        password = str(post_data['password'])
+        logging.info(self.request.body)
+        username_entered = str(post_data['username'])
+        password_entered = str(post_data['password'])
+        userFound = False
 
-        # A real check to database for user goes here, this is placeholder
-        if username == "admin" and password == "pass":
-            userType = 'admin'
-        # End of place holder
+        for entity in create_entities.Account.query():
+            logging.info(entity)
+            if entity.username == username_entered:
+                if entity.password == password_entered:
+                    logging.info(entity.account_type)
+                    self.session['user'] = entity.username
+                    self.session['userType'] = entity.account_type
+                    userFound = True
 
-            self.session['user'] = username
-            self.session['userType'] = userType
-
+        if userFound:
             self.response.write(json.dumps({
                 "loggedIn": True,
-                "userType": userType
+                "userType": self.session['userType']
             }))
         else:
             self.response.write(json.dumps({
-                "errors": "invalid login"
+	           "errors": "invalid login"
             }))
+
 
 class LogoutHandler(session_handler.BaseHandler):
     def get(self):
         self.session.clear()
-
 
 # [START app]
 app = webapp2.WSGIApplication([
