@@ -84,12 +84,11 @@ class CreateUserHandler(session_handler.BaseHandler):
 		if usernameUnique:
 			create_entities.AccountHandler.post(ah, body)
             self.response.write(json.dumps({
-                "loggedIn": True,
-                "userType": self.session['userType']
+                "userDetails": "Account successfully created."
             }))
         else:
             self.response.write(json.dumps({
-	           "errors": "username taken"
+	           "errors": "Username taken."
             }))
 
 

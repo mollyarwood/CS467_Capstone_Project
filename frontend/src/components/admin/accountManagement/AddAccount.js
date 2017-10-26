@@ -17,7 +17,7 @@ class AddAccount extends Component {
     event.preventDefault();
       const username = event.target.username.value;
       const password = event.target.password.value;
-      axios.post('/accounts', { username, password, userType: 'user' })
+      axios.post('/createUser', { username, password, userType: 'user' })
         .then((response) => {
           if (response.data.userDetails) {
             this.props.changePage({ target: { name: 'view' } });
