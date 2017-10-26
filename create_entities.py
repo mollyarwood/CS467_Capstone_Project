@@ -8,6 +8,7 @@ import webapp2
 import json
 import session_handler
 import datetime
+import logging
 from time import mktime
 from webapp2_extras import sessions
 from google.appengine.api import app_identity
@@ -49,11 +50,11 @@ class MyEncoder(json.JSONEncoder):
 class AccountCollectionHandler(session_handler.BaseHandler):
 
 	def get(self):
-		query = Account.query()
-		for account in query:
-			account = account.to_dict()
-			self.response.write(json.dumps(account, cls=MyEncoder))
-			self.response.write('\n')
+		accounts = []
+		for account in Account.query():
+			account = json.dumps(account.to_dict(), cls=MyEncoder)
+			accounts.append(account)
+		return accounts
 
 
 
@@ -84,11 +85,14 @@ class AccountHandler(session_handler.BaseHandler):
 
 		# USERNAMES MUST BE UNIQUE ACROSS ACCOUNTS
 		if username_already_exists:
-			return False
+			account_dict = dict()
+			account_dict = {
+				"errors": "Username already exists"
+			}
 		else:
 			new_account = Account(username=account_data["username"],
 			password=account_data["password"],
-			account_type=account_data['account_type'])
+			account_type=account_data['userType'])
 
 			if 'name' in account_data:
 				new_account.name = account_data['name']
@@ -97,10 +101,12 @@ class AccountHandler(session_handler.BaseHandler):
 			new_account.id = new_account.key.urlsafe()
 			new_account.put()
 			account_dict = new_account.to_dict()
+			account_dict = {
+				"userDetails": account_dict
+			}
 
-			# self.response.write(json.dumps(account_dict, cls=MyEncoder))
-			return True
-		#return json.dumps(account_dict, cls=MyEncoder)
+		# self.response.write(json.dumps(account_dict, cls=MyEncoder))
+		return json.dumps(account_dict, cls=MyEncoder)
 
 
 

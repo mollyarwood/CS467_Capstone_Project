@@ -6,6 +6,8 @@ import json
 import yaml
 import binascii
 import logging
+import datetime
+from time import mktime
 
 
 #generate random string for the session
@@ -15,6 +17,16 @@ config = {}
 config['webapp2_extras.sessions'] = {
     'secret_key': key,
 }
+
+
+#extending the json class to handle datetime
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return int(mktime(obj.timetuple()))
+
+        return json.JSONEncoder.default(self, obj)
 
 class AuthHandler(session_handler.BaseHandler):
     # Checks if user is already logged in
@@ -34,16 +46,16 @@ class AuthHandler(session_handler.BaseHandler):
     # login handler
     def post(self):
         post_data = yaml.safe_load(self.request.body)
-        logging.info(self.request.body)
+        # logging.info(self.request.body)
         username_entered = str(post_data['username'])
         password_entered = str(post_data['password'])
         userFound = False
 
         for entity in create_entities.Account.query():
-            logging.info(entity)
+            # logging.info(entity)
             if entity.username == username_entered:
                 if entity.password == password_entered:
-                    logging.info(entity.account_type)
+                    # logging.info(entity.account_type)
                     self.session['user'] = entity.username
                     self.session['userType'] = entity.account_type
                     userFound = True
@@ -64,38 +76,23 @@ class LogoutHandler(session_handler.BaseHandler):
         self.session.clear()
 		
 		
-class CreateUserHandler(session_handler.BaseHandler):	
-	def post(self):
-		ah = create_entities.AccountHandler()
-		body = dict()
-        post_data = yaml.safe_load(self.request.body)
-        logging.info(self.request.body)
-        body['username'] = str(post_data['username'])
-        body['password'] = str(post_data['password'])
-		body['account_type'] = str(post_data['account_type'])
+class AccountHandler(session_handler.BaseHandler):	
+    def get(self):
+        ah = create_entities.AccountCollectionHandler()
+        accounts = create_entities.AccountCollectionHandler.get(ah)
+        logging.info(accounts)
+        self.response.write(accounts)
 		
-		usernameUnique = True
-		# Check that username has not been taken
-		for entity in create_entities.Account.query():
-            logging.info(entity)
-            if entity.username == username_entered:
-				usernameUnqiue = False
-				
-		if usernameUnique:
-			create_entities.AccountHandler.post(ah, body)
-            self.response.write(json.dumps({
-                "userDetails": "Account successfully created."
-            }))
-        else:
-            self.response.write(json.dumps({
-	           "errors": "Username taken."
-            }))
+    def post(self):
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.post(ah, yaml.safe_load(self.request.body))
+        self.response.write(response)
 
 
 # [START app]
 app = webapp2.WSGIApplication([
 	('/auth', AuthHandler),
     ('/logout', LogoutHandler),
-	('/createUser', CreateUserHandler)
+    ('/accounts', AccountHandler)
 ], config=config, debug=True)
 # [END app]

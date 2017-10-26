@@ -21,8 +21,8 @@ class ViewAccounts extends Component {
             {
               this.props.accounts.map( account =>
                 <tr className="row" key={account.id}>
-                  <td className="col-md-5">{account.name}</td>
-                  <td className="col-md-5">{account.name}</td>
+                  <td className="col-md-5">{account.username}</td>
+                  // <td className="col-md-5">{account.name}</td>
                   <td className="col-md-1">
                     <button id={account.id} className="btn btn-default" name="edit" onClick={this.props.changePage}>
                       Edit
