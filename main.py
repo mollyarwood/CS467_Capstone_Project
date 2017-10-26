@@ -62,10 +62,41 @@ class AuthHandler(session_handler.BaseHandler):
 class LogoutHandler(session_handler.BaseHandler):
     def get(self):
         self.session.clear()
+		
+		
+class CreateUserHandler(session_handler.BaseHandler):	
+	def post(self):
+		ah = create_entities.AccountHandler()
+		body = dict()
+        post_data = yaml.safe_load(self.request.body)
+        logging.info(self.request.body)
+        body['username'] = str(post_data['username'])
+        body['password'] = str(post_data['password'])
+		body['account_type'] = str(post_data['account_type'])
+		
+		usernameUnique = True
+		# Check that username has not been taken
+		for entity in create_entities.Account.query():
+            logging.info(entity)
+            if entity.username == username_entered:
+				usernameUnqiue = False
+				
+		if usernameUnique:
+			create_entities.AccountHandler.post(ah, body)
+            self.response.write(json.dumps({
+                "loggedIn": True,
+                "userType": self.session['userType']
+            }))
+        else:
+            self.response.write(json.dumps({
+	           "errors": "username taken"
+            }))
+
 
 # [START app]
 app = webapp2.WSGIApplication([
 	('/auth', AuthHandler),
-    ('/logout', LogoutHandler)
+    ('/logout', LogoutHandler),
+	('/createUser', CreateUserHandler)
 ], config=config, debug=True)
 # [END app]
