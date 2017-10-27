@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import _ from 'lodash';
 
 class AddAccount extends Component {
   constructor(props) {
@@ -17,7 +18,12 @@ class AddAccount extends Component {
     event.preventDefault();
       const username = event.target.username.value;
       const password = event.target.password.value;
-      axios.post('/accounts', { username, password, userType: 'user' })
+      axios.post('/accounts',
+        {
+          username,
+          password,
+          userType: _.lowerCase(this.props.accountType)
+        })
         .then((response) => {
           if (response.data.userDetails) {
             this.props.changePage({ target: { name: 'view' } });

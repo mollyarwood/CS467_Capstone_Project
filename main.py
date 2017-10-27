@@ -74,15 +74,16 @@ class AuthHandler(session_handler.BaseHandler):
 class LogoutHandler(session_handler.BaseHandler):
     def get(self):
         self.session.clear()
-		
-		
-class AccountHandler(session_handler.BaseHandler):	
+
+
+class AccountHandler(session_handler.BaseHandler):
     def get(self):
+        account_type = self.request.GET['type']
         ah = create_entities.AccountCollectionHandler()
-        accounts = create_entities.AccountCollectionHandler.get(ah)
+        accounts = create_entities.AccountCollectionHandler.get(ah, account_type)
         logging.info(accounts)
-        self.response.write(accounts)
-		
+        self.response.write(json.dumps({ "accounts": accounts }))
+
     def post(self):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.post(ah, yaml.safe_load(self.request.body))

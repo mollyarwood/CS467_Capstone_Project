@@ -49,11 +49,19 @@ class MyEncoder(json.JSONEncoder):
 
 class AccountCollectionHandler(session_handler.BaseHandler):
 
-	def get(self):
+	def get(self, account_type):
+		logging.info(account_type)
 		accounts = []
 		for account in Account.query():
-			account = json.dumps(account.to_dict(), cls=MyEncoder)
-			accounts.append(account)
+			account = account.to_dict()
+			if account['account_type'] == account_type:
+				accounts.append({
+					"id": account['id'],
+					"username": account['username'],
+					"name": account['name'],
+					"creation_date": account['creation_date'].strftime("%m/%d/%Y %H:%M:%S"),
+					"last_modified": account['last_modified'].strftime("%m/%d/%Y %H:%M:%S")
+				})
 		return accounts
 
 
