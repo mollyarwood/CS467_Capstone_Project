@@ -12,6 +12,7 @@ class Login extends Component {
     };
   }
 
+
   logIn(event) {
     event.preventDefault();
     const username = event.target.username.value;
@@ -55,6 +56,7 @@ class Login extends Component {
           </div>
           <div className="row">
           <button className="btn btn-primary" type='submit'>Log In</button>
+          <button className="btn pull-right" type="button" name='recover' onClick={this.props.changePage}>Forgot Password?</button>
         </div>
         </form>
       </div>
