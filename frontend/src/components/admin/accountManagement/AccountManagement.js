@@ -19,16 +19,6 @@ class AccountManagement extends Component {
       this.changePage = this.changePage.bind(this);
   }
 
-  componentWillMount() {
-    axios.get('/accounts').then((response) => {
-      if (response.data.accounts) {
-        this.setState({
-          accounts: response.data.accounts
-        });
-      }
-    });
-  }
-
   deleteAccount(event) {
     const accountId = parseInt(event.target.id, 10);
 
@@ -47,7 +37,6 @@ class AccountManagement extends Component {
       currentPage: newPage
     });
   }
-
   render() {
     if (this.state.currentPage === 'add') {
       return <AddAccount accountType={this.state.accountType} changePage={this.changePage} />
@@ -58,7 +47,6 @@ class AccountManagement extends Component {
         <ViewAccounts
           changePage={this.changePage}
           deleteAccount={this.deleteAccount}
-          accounts={this.state.accounts}
           accountType={this.state.accountType}
         />
       );
