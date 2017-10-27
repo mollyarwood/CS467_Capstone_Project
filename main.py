@@ -66,6 +66,7 @@ class LogoutHandler(session_handler.BaseHandler):
 # [START app]
 app = webapp2.WSGIApplication([
 	('/auth', AuthHandler),
-    ('/logout', LogoutHandler)
+    ('/logout', LogoutHandler),
+    ('recover', create_entities.RecoverHandler)
 ], config=config, debug=True)
 # [END app]
