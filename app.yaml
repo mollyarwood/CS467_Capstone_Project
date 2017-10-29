@@ -12,6 +12,9 @@ handlers:
 
 - url: /logout
   script: main.app
+  
+- url: /accounts
+  script: main.app
 
 - url: /
   static_dir: frontend/public
