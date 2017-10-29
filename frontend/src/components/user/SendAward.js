@@ -9,8 +9,21 @@ class SendAward extends Component {
     this.renderErrors = this.renderErrors.bind(this);
 
     this.state = {
-      errors: []
+      errors: [],
+      accounts: []
     }
+  }
+
+  componentWillMount() {
+    axios.get(`/accounts?type=user`)
+      .then((response) => {
+        if (response.data.accounts) {
+          this.setState({
+            accounts: response.data.accounts,
+            isLoading: false
+          });
+        }
+      });
   }
 
   sendAward(event) {
@@ -61,18 +74,15 @@ class SendAward extends Component {
             <div className="form-group row">
               <label htmlFor="password" className="col-form-label">Recipient Name:</label>
               <div className="form-group">
-                <label htmlFor="sel1">Select list:</label>
                 <select className="form-control" id="sel1">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
+                  {this.state.accounts.map((account) => <option key={account.id}>{account.username}</option>)}
                 </select>
               </div>
             </div>
-            <div className="form-group row">
-              <div>Recipient's Email Address: </div>
-            </div>
+              <div className="form-group row">
+                <label htmlFor="username" className="col-form-label">Recipient's Email Address: </label>
+                <input className="form-control" type="text" name="username" />
+              </div>
             <div className="row">
               <button className="btn btn-primary" type='submit'>Send</button>
               <button className="btn pull-right" type="button" name='ViewAwards' onClick={this.props.changePage}>Cancel</button>

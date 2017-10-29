@@ -38,7 +38,7 @@ class FirstTimeLogin extends Component {
     });
 
     if(errors.length === 0) {
-      this.props.firstTimeLogin();
+      this.props.onSubmit({userType: this.props.userType});
     }
   }
 

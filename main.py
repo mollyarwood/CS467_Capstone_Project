@@ -51,6 +51,9 @@ class AuthHandler(session_handler.BaseHandler):
         password_entered = str(post_data['password'])
         userFound = False
 
+        account_creation_date = ''
+        account_last_modified = ''
+
         for entity in create_entities.Account.query():
             # logging.info(entity)
             if entity.username == username_entered:
@@ -58,12 +61,16 @@ class AuthHandler(session_handler.BaseHandler):
                     # logging.info(entity.account_type)
                     self.session['user'] = entity.username
                     self.session['userType'] = entity.account_type
+                    account_creation_date = entity.creation_date.strftime("%m/%d/%Y %H:%M:%S")
+                    account_last_modified = entity.last_modified.strftime("%m/%d/%Y %H:%M:%S")
                     userFound = True
 
         if userFound:
             self.response.write(json.dumps({
                 "loggedIn": True,
-                "userType": self.session['userType']
+                "userType": self.session['userType'],
+                "creation_date": account_creation_date,
+                "last_modified": account_creation_date
             }))
         else:
             self.response.write(json.dumps({
