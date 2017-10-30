@@ -16,12 +16,14 @@ class Login extends Component {
     };
   }
 
+
   changePage(event) {
     const newPage = event.target.name;
     this.setState({
       currentPage: newPage
     });
   }
+
 
   logIn(event) {
     event.preventDefault();

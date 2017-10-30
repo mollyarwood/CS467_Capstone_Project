@@ -10,12 +10,10 @@ class Recover extends Component {
       errors: []
     };
 
-
     this.renderErrors = this.renderErrors.bind(this);
     this.sendPass = this.sendPass.bind(this);
 
   }
-
 
   sendPass(event) {
     event.preventDefault();
