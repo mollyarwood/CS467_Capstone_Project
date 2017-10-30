@@ -176,7 +176,7 @@ app = webapp2.WSGIApplication([
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
-    ('/api/accounts', ApiAccountCollectionHandler)
+    ('/api/accounts', ApiAccountCollectionHandler),
     ('/recover', PassHandler)
 ], config=config, debug=True)
 # [END app]
