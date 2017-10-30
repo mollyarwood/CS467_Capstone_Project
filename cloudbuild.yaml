@@ -1,4 +1,5 @@
 steps:
 - name: 'gcr.io/cloud-builders/gsutil'
   args: [ '-m', 'rsync', '-r', '-c', '-d', '.', 'gs://cs467capstone.appspot.com' ]
-  
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app', 'deploy']
