@@ -94,7 +94,7 @@ class AccountHandler(session_handler.BaseHandler):
 class PassHandler(session_handler.BaseHandler):
     def post(self):
         ah = create_entities.RecoverHandler()
-        response = create_entities.PassHandler.post(ah, yaml.safe_load(self.request.body))
+        response = create_entities.RecoverHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
 
 
