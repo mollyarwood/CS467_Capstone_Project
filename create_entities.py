@@ -13,6 +13,7 @@ from time import mktime
 from webapp2_extras import sessions
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
+from google.appengine.api import mail
 
 
 
@@ -233,3 +234,35 @@ class AwardHandler(session_handler.BaseHandler):
 			else:
 				return "Error: award ID not found"
 				# self.response.write("award ID not found")
+
+
+class RecoverHandler(session_handler.BaseHandler):
+
+	def post(self):
+		email_data = json.loads(self.request.body)
+		em = email_data['email']
+
+		query = Account.query()
+		for account in query:
+			account = account.to_dict()
+			if em == account['username']:
+				p = account['password']
+
+		#Email award to recipient
+#		sender_address = "person@cs467capstone.appspotmail.com"
+#		message = mail.EmailMessage(
+#			sender = sender_address,
+#			subject = "CS467_PasswordRecovery"
+#			)
+
+#		message.to = "Molly Arwood <MollyArwood865@gmail.com>"
+#		message.body = "password will be extracted from p and sent here"
+		
+#		message.send()
+
+		self.response.write(json.dumps({
+                "sent": True,
+         }))
+
+
+	
