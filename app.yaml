@@ -29,6 +29,7 @@ handlers:
   script: main.app
 
 - url: /api/award(.*)
+  script: main.app
 
 - url: /recover
   script: main.app
