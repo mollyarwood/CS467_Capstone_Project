@@ -90,10 +90,21 @@ class AccountHandler(session_handler.BaseHandler):
         self.response.write(response)
 
 
+
+class PassHandler(session_handler.BaseHandler):
+    def post(self):
+        ah = create_entities.RecoverHandler()
+        response = create_entities.PassHandler.post(ah, yaml.safe_load(self.request.body))
+        self.response.write(response)
+
+
+
+
 # [START app]
 app = webapp2.WSGIApplication([
 	('/auth', AuthHandler),
     ('/logout', LogoutHandler),
-    ('/accounts', AccountHandler)
+    ('/accounts', AccountHandler),
+    ('/recover', PassHandler)
 ], config=config, debug=True)
 # [END app]

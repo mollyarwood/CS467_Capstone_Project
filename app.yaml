@@ -16,6 +16,9 @@ handlers:
 - url: /accounts
   script: main.app
 
+- url: /recover
+  script: main.app
+
 - url: /
   static_dir: frontend/public
 

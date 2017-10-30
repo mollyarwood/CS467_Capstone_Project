@@ -10,18 +10,19 @@ class Recover extends Component {
       errors: []
     };
 
+
     this.renderErrors = this.renderErrors.bind(this);
     this.sendPass = this.sendPass.bind(this);
 
   }
 
+
   sendPass(event) {
     event.preventDefault();
-    const em = event.target.email.value;
+    const email = event.target.email.value;
 
     axios.post('/recover', { email })
     .then((response) => {
-        let resp;
         if (response.data.sent) {
             return <h2> Email Has Been Sent</h2>;
         } else {
