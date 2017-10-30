@@ -49,12 +49,12 @@ class MyEncoder(json.JSONEncoder):
 
 class AccountCollectionHandler(session_handler.BaseHandler):
 
-	def get(self, account_type):
+	def get(self, account_type=None):
 		logging.info(account_type)
 		accounts = []
 		for account in Account.query():
 			account = account.to_dict()
-			if account['account_type'] == account_type:
+			if account['account_type'] == account_type or account_type == None:
 				accounts.append({
 					"id": account['id'],
 					"username": account['username'],
@@ -69,11 +69,20 @@ class AccountCollectionHandler(session_handler.BaseHandler):
 class AwardCollectionHandler(session_handler.BaseHandler):
 
 	def get(self):
+		awards = []
 		query = Award.query()
 		for award in query:
 			award = award.to_dict()
-			self.response.write(json.dumps(award, cls=MyEncoder))
-			self.response.write('\n')
+			awards.append({
+					"id": award['id'],
+					"sender": award['sender'],
+					"recipient_name": award['recipient_name'],
+					"recipient_email": award['recipient_email'],
+					"award_type": award['award_type'],
+					"date_sent": award['date_sent'].strftime("%m/%d/%Y %H:%M:%S"),
+				})
+		return awards
+			
 
 
 
@@ -151,7 +160,7 @@ class AccountHandler(session_handler.BaseHandler):
 				return json.dumps(account.to_dict())
 				#self.response.write(json.dumps(account.to_dict()))
 			else:
-				return "Error: accound ID not found"
+				return "Error: account ID not found"
 				#self.response.write("account ID not found")
 
 
@@ -215,10 +224,10 @@ class AwardHandler(session_handler.BaseHandler):
 		if id:
 			award = ndb.Key(urlsafe=id).get()
 			if award != None:
-				return json.dumps(award.to_dict())
+				return json.dumps(award.to_dict(), cls=MyEncoder)
 				#self.response.write(json.dumps(award.to_dict()))
 			else:
-				return "Error: accound ID not found"
+				return "Error: award ID not found"
 				#self.response.write("award ID not found")
 
 
