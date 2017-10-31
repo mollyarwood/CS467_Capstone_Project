@@ -21,7 +21,7 @@ class Recover extends Component {
     event.preventDefault();
     const email = event.target.email.value;
 
-    axios.post('/recover', { email })
+    axios.post('/recover', { email : email})
     .then((response) => {
         if (response.data.sent) {
             return <h2> Email Has Been Sent</h2>;

@@ -161,10 +161,11 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
     
 
 class PassHandler(session_handler.BaseHandler):
-    def post(self):
+   def post(self):
         ah = create_entities.RecoverHandler()
         response = create_entities.RecoverHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
+
 
 
 # [START app]
@@ -172,11 +173,11 @@ app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
+    ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
     ('/api/accounts', ApiAccountCollectionHandler)
-    ('/recover', PassHandler)
 ], config=config, debug=True)
 # [END app]
