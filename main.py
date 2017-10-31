@@ -92,8 +92,6 @@ class AccountHandler(session_handler.BaseHandler):
 
 
 class SendAwardHandler(session_handler.BaseHandler):
-    def get(self):
-        self.response.write("SendAwardHandler GET Called")
     
     def post(self):
         # SAVE AWARD IN DB
@@ -164,13 +162,12 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
     
 
 class PassHandler(session_handler.BaseHandler):
-    def get(self):
-        self.response.write("PassHandler GET Called")
-        
-    def post(self):
+     
+   def post(self):
         ah = create_entities.RecoverHandler()
         response = create_entities.RecoverHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
+
 
 
 # [START app]
@@ -178,11 +175,11 @@ app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
+    ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
-    ('/api/accounts', ApiAccountCollectionHandler),
-    ('/recover', create_entities.RecoverHandler)
+    ('/api/accounts', ApiAccountCollectionHandler)
 ], config=config, debug=True)
 # [END app]

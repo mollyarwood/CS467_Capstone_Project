@@ -44,6 +44,7 @@ class Login extends Component {
       })
   }
 
+
   renderErrors() {
     if(this.state.errors.length !== 0) {
       return <div className="alert alert-danger col-md-6 col-md-offset-3"><ul>
@@ -52,6 +53,7 @@ class Login extends Component {
     }
     return <div></div>;
   }
+
 
   render() {
     if (this.state.currentPage === 'login') {
