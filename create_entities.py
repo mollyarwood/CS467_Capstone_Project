@@ -13,6 +13,7 @@ from time import mktime
 from webapp2_extras import sessions
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
+from google.appengine.api import mail
 
 
 
@@ -245,10 +246,14 @@ class AwardHandler(session_handler.BaseHandler):
 
 class RecoverHandler(session_handler.BaseHandler):
 
+#	def get(self):
+#		self.post()
+
 	def post(self):
 
-		email_data = json.loads(self.response.body)
+		email_data = json.loads(self.request.body)
 		em = email_data['email']
+		p = None
 
 		query = Account.query()
 		for account in query:
@@ -256,18 +261,22 @@ class RecoverHandler(session_handler.BaseHandler):
 			if em == account['username']:
 				p = account['password']
 
+
 		#Email Award to recipient
-		sender_address = "system@cs467capstoneappspotmail.com"
+		sender_address = "arwoodm@oregonstate.edu"
 		message = mail.EmailMessage(
 			sender = sender_address,
 			subject = "CS467 Password Recovery"
 			)
 
-		message.to = p
-		message.body = "password goes here"
+		message.to = em
 
+		if p != None: 
+			message.body = "Your password is {}".format(p)
+		else:
+			message.body = "Sorry, there is no user with that email in our account."
 		message.send()
 
-		self.response.write(json.dumps({
-			"sent": True
-			}))
+		resp = {'sent': 'True'}
+		self.response.write(json.dumps(resp))
+

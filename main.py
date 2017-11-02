@@ -161,13 +161,13 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
 
     
 
-class PassHandler(session_handler.BaseHandler):
+#class PassHandler(session_handler.BaseHandler):
      
-   def post(self):
-        ah = create_entities.RecoverHandler()
-        response = create_entities.RecoverHandler.post(ah, yaml.safe_load(self.request.body))
-        self.response.write(response)
-
+#   def post(self):
+#        ah = create_entities.RecoverHandler()
+#        response['form'] = create_entities.RecoverHandler.post()
+        #self.response.write(response)
+#        self.response.write("hi there")
 
 
 # [START app]
