@@ -84,7 +84,7 @@ class Login extends Component {
     } else if (this.state.currentPage === 'forgotPassword') {
       return <div>Forgot password</div>
     } else if (this.state.currentPage === 'recover') {
-        return <Recover />
+        return <Recover changePage={this.changePage} />
     }
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Login from 'Login';
+import Login from './Login';
+import Notifications, {notify} from 'react-notify-toast';
 
 class Recover extends Component {
   constructor(props) {
@@ -14,17 +15,8 @@ class Recover extends Component {
 
     this.renderErrors = this.renderErrors.bind(this);
     this.sendPass = this.sendPass.bind(this);
-    this.changePage = this.changePage.bind(this);
 
   }
-
-  changePage(event) {
-    const newPage = event.target.name;
-    this.setState({
-      currentPage: newPage
-    });
-  }
-
 
 
   sendPass(event) {
@@ -34,8 +26,9 @@ class Recover extends Component {
     axios.post('/recover', {email})
     .then((response) => {
         if (response.data.sent) {
-            console.log(response.data.sent);
-            this.setState({currentPage: 'login'});
+            let myColor = {background: '#0E1717', text: "#FFFFFF"};
+            notify.show('Email Has Been Sent', "success", 2000, myColor);
+            setTimeout(() => {this.props.changePage({ target: { name: 'login' } })}, 3000);
         } else {
           this.setState({
             errors: [ response.data.errors ]
@@ -58,27 +51,24 @@ class Recover extends Component {
 
 
   render() {
-    if (this.state.currentPage === 'recover') {
-      return (
+    return (
+      <div>
+        <Notifications />
         <div>
-          <div>
-            <h2 id="welcome" className="text-center">Password Recovery</h2>
-          </div>
-          {this.renderErrors()}
-          <form className="col-md-4 col-md-offset-4" onSubmit={this.sendPass}>
-            <div className="form-group row">
-              <label htmlFor="email" className="col-form-label">Email</label>
-              <input className="form-control" type="text" name="email" />
-            </div>
-            <div className="row">
-              <button className="btn btn-primary" type='submit'>Send Password to Email</button>
-            </div>
-          </form>
+          <h2 id="welcome" className="text-center">Password Recovery</h2>
         </div>
-      );
-    } else if (this.state.currentPage === 'login') {
-      return <Login />;
-    }
+        {this.renderErrors()}
+        <form className="col-md-4 col-md-offset-4" onSubmit={this.sendPass}>
+          <div className="form-group row">
+            <label htmlFor="email" className="col-form-label">Email</label>
+            <input className="form-control" type="text" name="email" />
+          </div>
+          <div className="row">
+            <button className="btn btn-primary" type='submit'>Send Password to Email</button>
+          </div>
+        </form>
+      </div>
+    );
   }
 
 }

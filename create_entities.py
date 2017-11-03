@@ -276,7 +276,8 @@ class RecoverHandler(session_handler.BaseHandler):
 		else:
 			message.body = "Sorry, there is no user with that email in our account."
 		message.send()
-
-		resp = {'sent': 'True'}
+		resp = {
+		'sent': 'True'
+		}
 		self.response.write(json.dumps(resp))
 
