@@ -20,15 +20,20 @@ class AccountManagement extends Component {
   }
 
   deleteAccount(event) {
-    const accountId = parseInt(event.target.id, 10);
+    event.preventDefault();
+    const accountId = event.target.id;
+    const url = '/accounts/' + accountId;
 
-    axios.delete('/ROUTE-HERE').then((response) => {
-      const newAccountList = this.state.accounts
-        .filter(account => account.id !== accountId);
-      this.setState({
-        accounts: newAccountList
-      });
-    });
+    axios.delete(url).then((response) => {
+      console.log(response.data.deleted);
+      if (response.data.deleted) {
+        const newAccountList = this.state.accounts
+          .filter(account => account.id !== accountId);
+        this.setState({
+          accounts: newAccountList
+        });
+      }
+    }); 
   }
 
   changePage(event) {

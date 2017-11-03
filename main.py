@@ -90,6 +90,11 @@ class AccountHandler(session_handler.BaseHandler):
         response = create_entities.AccountHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
 
+    def delete(self):
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.delete(ah, yaml.safe_load(self.request.body))
+        self.response.write(response)
+
 
 class SendAwardHandler(session_handler.BaseHandler):
     
@@ -175,6 +180,7 @@ app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
+    ('/accounts/(.*)', create_entities.AccountHandler),
     ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),

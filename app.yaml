@@ -16,6 +16,9 @@ handlers:
 - url: /accounts
   script: main.app
 
+- url: /accounts/(.*)
+  script: main.app
+
 - url: /sendAward
   script: main.app
 

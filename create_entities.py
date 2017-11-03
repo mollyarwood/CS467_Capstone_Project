@@ -170,12 +170,20 @@ class AccountHandler(session_handler.BaseHandler):
 		if id:
 			account = ndb.Key(urlsafe=id).get()
 			if account != None:
-				ndb.Key(urlsafe=id).delete()
-				return "account deleted"
-				# self.response.write('account deleted')
+				try:
+					ndb.Key(urlsafe=id).delete()
+					resp = {
+					'deleted': 'True'
+					}
+				except datastore_errors.TransactionFailedError:
+					resp = {
+					'deleted': 'False'
+					}
 			else:
-				return "Error: account ID not found"
-				# self.response.write("account ID not found")
+				resp = {
+				'deleted': 'False'
+				}
+			self.response.write(json.dumps(resp))
 
 
 
