@@ -30,6 +30,7 @@ class App extends Component {
   setLoggedIn(responseData) {
     this.setState({
       loggedIn: true,
+      name: responseData.name,
       userType: responseData.userType,
     });
   }
@@ -49,7 +50,7 @@ class App extends Component {
     } else if (this.state.loggedIn && this.state.userType === "admin") {
       return <AdminInterface logOut={this.logOut} />;
     } else if (this.state.loggedIn && this.state.userType === "user") {
-      return <UserInterface logOut={this.logOut} />;
+      return <UserInterface name={this.state.name} logOut={this.logOut} />;
     } else {
       return <Login setLoggedIn={this.setLoggedIn} />;
     }

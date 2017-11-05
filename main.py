@@ -41,6 +41,7 @@ class AuthHandler(session_handler.BaseHandler):
         else:
             self.response.write(json.dumps({
                 "loggedIn": True,
+                "name": self.session.get('name'),
                 "userType": self.session.get('userType')
             }))
 
@@ -52,19 +53,33 @@ class AuthHandler(session_handler.BaseHandler):
         password_entered = str(post_data['password'])
         userFound = False
 
+        account_creation_date = ''
+        account_last_modified = ''
+        account_id = ''
+        name = ''
+
         for entity in create_entities.Account.query():
             # logging.info(entity)
             if entity.username == username_entered:
                 if entity.password == password_entered:
                     # logging.info(entity.account_type)
                     self.session['user'] = entity.username
+                    self.session['name'] = entity.name
                     self.session['userType'] = entity.account_type
+                    account_id = entity.id
+                    account_creation_date = entity.creation_date.strftime("%m/%d/%Y %H:%M:%S")
+                    account_last_modified = entity.last_modified.strftime("%m/%d/%Y %H:%M:%S")
+                    name = entity.name
                     userFound = True
 
         if userFound:
             self.response.write(json.dumps({
                 "loggedIn": True,
-                "userType": self.session['userType']
+                "id": account_id,
+                "name": name,
+                "userType": self.session['userType'],
+                "creation_date": account_creation_date,
+                "last_modified": account_last_modified
             }))
         else:
             self.response.write(json.dumps({
@@ -92,7 +107,7 @@ class AccountHandler(session_handler.BaseHandler):
 
 
 class SendAwardHandler(session_handler.BaseHandler):
-    
+
     def post(self):
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
@@ -109,7 +124,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         to=recipient_email,
         subject="Congratulations " + body["recipient_name"] + "! You received an award!",
         body="See attachment.")
-        
+
 
 class ApiAwardHandler(webapp2.RequestHandler):
     def post(self):
@@ -126,43 +141,50 @@ class ApiAwardHandler(webapp2.RequestHandler):
         ah = create_entities.AwardHandler()
         response = create_entities.AwardHandler.delete(ah, id)
         self.response.write(response)
-    
+
 
 class ApiAwardCollectionHandler(webapp2.RequestHandler):
     def get(self):
+        name = self.request.GET['name']
         ah = create_entities.AwardCollectionHandler()
-        response = create_entities.AwardCollectionHandler.get(ah)
+        response = create_entities.AwardCollectionHandler.get(ah, name)
         self.response.write(response)
 
 
-        
+
 class ApiAccountHandler(session_handler.BaseHandler):
     def post(self):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.post(ah, self.request.body)
         self.response.write(response)
-     
+
     def get(self, id=None):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.get(ah, id)
+        self.response.write(response)
+
+    def patch(self, id=None):
+        body = self.request.body
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.patch(ah, id, body)
         self.response.write(response)
 
     def delete(self, id=None):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.delete(ah, id)
         self.response.write(response)
-        
-        
+
+
 class ApiAccountCollectionHandler(session_handler.BaseHandler):
     def get(self):
         ah = create_entities.AccountCollectionHandler()
         response = create_entities.AccountCollectionHandler.get(ah)
         self.response.write(response)
 
-    
+
 
 #class PassHandler(session_handler.BaseHandler):
-     
+
 #   def post(self):
 #        ah = create_entities.RecoverHandler()
 #        response['form'] = create_entities.RecoverHandler.post()
@@ -171,10 +193,16 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
 
 
 # [START app]
+
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH','DELETE',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
+
 app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
+    ('/accounts/(.*)', create_entities.AccountHandler),
     ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),

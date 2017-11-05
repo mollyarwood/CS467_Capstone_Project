@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import Dropzone from 'react-dropzone';
 
 class FirstTimeLogin extends Component {
   constructor(props) {
@@ -38,8 +40,18 @@ class FirstTimeLogin extends Component {
     });
 
     if(errors.length === 0) {
-      this.props.firstTimeLogin();
+      this.submit(event);
     }
+  }
+
+  submit(event) {
+    const name = event.target.name.value;
+    const password = event.target.newPassword.value;
+    const signiture = "";
+    axios.patch(`/api/account/${this.props.accountId}`, { name, password })
+      .then((response) => {
+        this.props.onSubmit({userType: this.props.userType});
+      })
   }
 
   uploadSigniture(event) {
@@ -77,7 +89,12 @@ class FirstTimeLogin extends Component {
             <input className="form-control" type="text" id="name" name="name" />
           </div>
           <div className="row">
-
+            <Dropzone
+                  multiple={false}
+                  accept="image/*"
+                  onDrop={this.uploadSigniture}>
+                  <p>Drop an image or click to select a file to upload.</p>
+            </Dropzone>
               <div>Upload an Image of Your Signature</div>
             <button className="btn center-block" onClick={this.uploadSigniture}>Upload</button>
           </div>
