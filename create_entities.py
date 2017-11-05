@@ -158,7 +158,7 @@ class AccountHandler(session_handler.BaseHandler):
 		if id:
 			account = ndb.Key(urlsafe=id).get()
 			if account != None:
-				return json.dumps({"it": self.request}) #json.dumps(account.to_dict())
+				return json.dumps(account.to_dict())
 				#self.response.write(json.dumps(account.to_dict()))
 			else:
 				return "Error: account ID not found"
