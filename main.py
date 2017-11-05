@@ -7,8 +7,9 @@ import yaml
 import binascii
 import logging
 import datetime
+import urllib
 from time import mktime
-
+from google.appengine.api import mail
 
 #generate random string for the session
 key = binascii.hexlify(os.urandom(24))
@@ -74,7 +75,7 @@ class AuthHandler(session_handler.BaseHandler):
             }))
         else:
             self.response.write(json.dumps({
-	           "errors": "invalid login"
+               "errors": "invalid login"
             }))
 
 
@@ -97,10 +98,95 @@ class AccountHandler(session_handler.BaseHandler):
         self.response.write(response)
 
 
+class SendAwardHandler(session_handler.BaseHandler):
+    
+    def post(self):
+        # SAVE AWARD IN DB
+        ah = create_entities.AwardHandler()
+        body = yaml.safe_load(self.request.body)
+        body["sender"] = self.session.get("user")
+        response = create_entities.AwardHandler.post(ah, body)
+        self.response.write(response)
+
+        # SEND EMAIL
+        sender = body["sender"]
+        recipient_email=body["recipient_email"]
+        # self.response.write("award sent")
+        mail.send_mail(sender=sender,
+        to=recipient_email,
+        subject="Congratulations " + body["recipient_name"] + "! You received an award!",
+        body="See attachment.")
+        
+
+class ApiAwardHandler(webapp2.RequestHandler):
+    def post(self):
+        ah = create_entities.AwardHandler()
+        response = create_entities.AwardHandler.post(ah, self.request.body)
+        self.response.write(response)
+
+    def get(self, id=None):
+        ah = create_entities.AwardHandler()
+        response = create_entities.AwardHandler.get(ah, id)
+        self.response.write(response)
+
+    def delete(self, id=None):
+        ah = create_entities.AwardHandler()
+        response = create_entities.AwardHandler.delete(ah, id)
+        self.response.write(response)
+    
+
+class ApiAwardCollectionHandler(webapp2.RequestHandler):
+    def get(self):
+        ah = create_entities.AwardCollectionHandler()
+        response = create_entities.AwardCollectionHandler.get(ah)
+        self.response.write(response)
+
+
+        
+class ApiAccountHandler(session_handler.BaseHandler):
+    def post(self):
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.post(ah, self.request.body)
+        self.response.write(response)
+     
+    def get(self, id=None):
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.get(ah, id)
+        self.response.write(response)
+
+    def delete(self, id=None):
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.delete(ah, id)
+        self.response.write(response)
+        
+        
+class ApiAccountCollectionHandler(session_handler.BaseHandler):
+    def get(self):
+        ah = create_entities.AccountCollectionHandler()
+        response = create_entities.AccountCollectionHandler.get(ah)
+        self.response.write(response)
+
+    
+
+#class PassHandler(session_handler.BaseHandler):
+     
+#   def post(self):
+#        ah = create_entities.RecoverHandler()
+#        response['form'] = create_entities.RecoverHandler.post()
+        #self.response.write(response)
+#        self.response.write("hi there")
+
+
 # [START app]
 app = webapp2.WSGIApplication([
-	('/auth', AuthHandler),
+    ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
-    ('/accounts', AccountHandler)
+    ('/accounts', AccountHandler),
+    ('/recover', create_entities.RecoverHandler),
+    ('/sendAward', SendAwardHandler),
+    ('/api/award/(.*)', ApiAwardHandler),
+    ('/api/awards', ApiAwardCollectionHandler),
+    ('/api/account/(.*)', ApiAccountHandler),
+    ('/api/accounts', ApiAccountCollectionHandler)
 ], config=config, debug=True)
 # [END app]

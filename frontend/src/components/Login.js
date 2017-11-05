@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import FirstTimeLogin from './FirstTimeLogin';
+import Recover from './Recover';
 
 class Login extends Component {
   constructor(props) {
@@ -68,8 +69,9 @@ class Login extends Component {
               <input className="form-control" type="password" name="password" />
             </div>
             <div className="row">
-            <button className="btn btn-primary" type='submit'>Log In</button>
-          </div>
+              <button className="btn btn-primary" type='submit'>Log In</button>
+              <button className="btn pull-right" type="button" name="recover" onClick={this.changePage}>Forgot Password?</button>
+            </div>
           </form>
         </div>
       );
@@ -77,6 +79,8 @@ class Login extends Component {
       return <FirstTimeLogin onSubmit={this.props.setLoggedIn} userType={this.state.userType}/>
     } else if (this.state.currentPage === 'forgotPassword') {
       return <div>Forgot password</div>
+    } else if (this.state.currentPage === 'recover') {
+        return <Recover changePage={this.changePage} />
     }
   }
 }

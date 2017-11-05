@@ -12,9 +12,31 @@ handlers:
 
 - url: /logout
   script: main.app
-  
+
 - url: /accounts
+  script: main.app
+
+- url: /sendAward
+  script: main.app
+
+- url: /api/awards
+  script: main.app
+
+- url: /api/accounts
+  script: main.app
+
+- url: /api/account/(.*)
+  script: main.app
+
+- url: /api/award(.*)
+  script: main.app
+
+- url: /recover
   script: main.app
 
 - url: /
   static_dir: frontend/public
+
+skip_files: 
+- ^(.*/)?.*/node_modules(/.*)?
+- ^(.*/)?.*/build/(/.*)?
