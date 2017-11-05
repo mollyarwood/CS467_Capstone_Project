@@ -12,7 +12,7 @@ class ViewAwards extends Component {
   }
 
   componentWillMount() {
-    axios.get('/awards').then((response) => {
+    axios.get(`/api/awards?name=${this.props.name}`).then((response) => {
       if (response.data.awards) {
         this.setState({
           awardsRecieved: response.data.awards

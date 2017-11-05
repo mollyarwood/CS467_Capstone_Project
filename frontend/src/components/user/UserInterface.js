@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import SendAward from './SendAward';
+import SendAward from './SendAward_old';
 import ViewAwards from './ViewAwards';
 import EditAccount from './EditAccount';
 
@@ -31,7 +31,7 @@ class UserInterface extends Component {
       case 'EditAccount':
         return <EditAccount />;
       default:
-        return <ViewAwards />;
+        return <ViewAwards name={this.props.name} />;
     }
   }
 

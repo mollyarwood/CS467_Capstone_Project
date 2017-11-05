@@ -29,9 +29,13 @@ class Login extends Component {
     const password = event.target.password.value;
     axios.post('/auth', { username, password })
       .then((response) => {
-        if (response.data.creation_date === response.data.last_modified) {
-          console.log(response.data);
-          this.setState({ currentPage: 'firstTime', userType: response.data.userType });
+        if (response.data.loggedIn &&
+          response.data.creation_date === response.data.last_modified) {
+          this.setState({
+            currentPage: 'firstTime',
+            accountId: response.data.id,
+            userType: response.data.userType
+          });
         } else if (response.data.loggedIn) {
           this.props.setLoggedIn(response.data);
         } else {
@@ -76,7 +80,7 @@ class Login extends Component {
         </div>
       );
     } else if (this.state.currentPage === 'firstTime') {
-      return <FirstTimeLogin onSubmit={this.props.setLoggedIn} userType={this.state.userType}/>
+      return <FirstTimeLogin onSubmit={this.props.setLoggedIn} userType={this.state.userType} accountId={this.state.accountId}/>
     } else if (this.state.currentPage === 'forgotPassword') {
       return <div>Forgot password</div>
     } else if (this.state.currentPage === 'recover') {

@@ -69,12 +69,13 @@ class AccountCollectionHandler(session_handler.BaseHandler):
 
 class AwardCollectionHandler(session_handler.BaseHandler):
 
-	def get(self):
+	def get(self, name=None):
 		awards = []
 		query = Award.query()
 		for award in query:
 			award = award.to_dict()
-			awards.append({
+			if name and award['recipient_name'] == name:
+				awards.append({
 					"id": award['id'],
 					"sender": award['sender'],
 					"recipient_name": award['recipient_name'],
@@ -83,7 +84,7 @@ class AwardCollectionHandler(session_handler.BaseHandler):
 					"date_sent": award['date_sent'].strftime("%m/%d/%Y %H:%M:%S"),
 				})
 		return awards
-			
+
 
 
 
@@ -128,11 +129,10 @@ class AccountHandler(session_handler.BaseHandler):
 
 
 
-	def patch(self, id=None):
+	def patch(self, id=None, body=None):
 		if id:
-			account_data = json.loads(self.request.body)
+			account_data = json.loads(body)
 			account = ndb.Key(urlsafe=id).get()
-
 			if account != None:
 				if 'username' in account_data:
 					account.username = account_data['username']
@@ -158,7 +158,7 @@ class AccountHandler(session_handler.BaseHandler):
 		if id:
 			account = ndb.Key(urlsafe=id).get()
 			if account != None:
-				return json.dumps(account.to_dict())
+				return json.dumps({"it": self.request}) #json.dumps(account.to_dict())
 				#self.response.write(json.dumps(account.to_dict()))
 			else:
 				return "Error: account ID not found"
@@ -271,7 +271,7 @@ class RecoverHandler(session_handler.BaseHandler):
 
 		message.to = em
 
-		if p != None: 
+		if p != None:
 			message.body = "Your password is {}".format(p)
 		else:
 			message.body = "Sorry, there is no user with that email in our account."
@@ -280,4 +280,3 @@ class RecoverHandler(session_handler.BaseHandler):
 		'sent': 'True'
 		}
 		self.response.write(json.dumps(resp))
-
