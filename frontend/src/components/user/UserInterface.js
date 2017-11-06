@@ -71,7 +71,7 @@ class UserInterface extends Component {
     return (
       <div className="col-md-10 col-md-offset-1">
         <div className="row">
-          <div className="col-md-11"><h1>User Interface</h1></div>
+          <div className="col-md-11 spacer-bottom"><h1>User Interface</h1></div>
           <div className="col-md-1 pull-right">
             <button className="btn btn-primary" onClick={this.props.logOut}>Log Out</button>
           </div>
