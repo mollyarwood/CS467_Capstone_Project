@@ -16,6 +16,10 @@ from google.appengine.ext import ndb
 from google.appengine.api import mail
 
 
+# THIS ALLOWS FOR PATCH REQUESTS
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 class Account(ndb.Model):
 	id = ndb.StringProperty()
@@ -35,7 +39,6 @@ class Award(ndb.Model):
 	recipient_name = ndb.StringProperty()
 	award_type = ndb.StringProperty()
 	date_sent = ndb.DateTimeProperty(auto_now_add=True)
-	# region = ndb.GeoPtProperty()
 
 
 #extending the json class to handle datetime
@@ -51,7 +54,6 @@ class MyEncoder(json.JSONEncoder):
 class AccountCollectionHandler(session_handler.BaseHandler):
 
 	def get(self, account_type=None):
-		logging.info(account_type)
 		accounts = []
 		for account in Account.query():
 			account = account.to_dict()
@@ -61,7 +63,8 @@ class AccountCollectionHandler(session_handler.BaseHandler):
 					"username": account['username'],
 					"name": account['name'],
 					"creation_date": account['creation_date'].strftime("%m/%d/%Y %H:%M:%S"),
-					"last_modified": account['last_modified'].strftime("%m/%d/%Y %H:%M:%S")
+					"last_modified": account['last_modified'].strftime("%m/%d/%Y %H:%M:%S"),
+					"password": account["password"]
 				})
 		return accounts
 
@@ -128,6 +131,39 @@ class AccountHandler(session_handler.BaseHandler):
 		return json.dumps(account_dict, cls=MyEncoder)
 
 
+<<<<<<< HEAD
+	def patch(self, body=None):
+		if body:
+			account_data = body
+		else:
+			account_data = json.loads(self.request.body)
+			
+		account = Account.query(Account.id == account_data['id']).get()
+		
+		if account != None:
+			if 'username' in account_data:
+				account.username = account_data['username']
+			if 'newPassword' in account_data:
+				account.password = account_data['newPassword']
+			if 'name' in account_data:
+				account.name = account_data['name']
+			if 'signature' in account_data:
+				account.signature = account_data['signature']
+
+			account.put()
+			account_dict = account.to_dict()
+			account_dict = {
+			"userDetails": account_dict
+			}  
+			
+		else:
+			account_dict = dict()
+			account_dict = {
+			"errors": "ERROR"
+			}
+			
+		return json.dumps(account_dict, cls=MyEncoder)
+=======
 
 	def patch(self, id=None, body=None):
 		if id:
@@ -151,6 +187,7 @@ class AccountHandler(session_handler.BaseHandler):
 			else:
 				return "Error: accound ID not found"
 				# self.response.write("account ID not found")
+>>>>>>> ce8dec6fd25213df65cbc117439931524e2af38f
 
 
 

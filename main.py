@@ -10,6 +10,8 @@ import datetime
 import urllib
 from time import mktime
 from google.appengine.api import mail
+from pylatex import Document, Command, Figure
+from pylatex.utils import italic, NoEscape
 
 #generate random string for the session
 key = binascii.hexlify(os.urandom(24))
@@ -19,6 +21,10 @@ config['webapp2_extras.sessions'] = {
     'secret_key': key,
 }
 
+# THIS ALLOWS FOR PATCH REQUESTS
+allowed_methods = webapp2.WSGIApplication.allowed_methods
+new_allowed_methods = allowed_methods.union(('PATCH',))
+webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 #extending the json class to handle datetime
 class MyEncoder(json.JSONEncoder):
@@ -66,6 +72,11 @@ class AuthHandler(session_handler.BaseHandler):
                     self.session['user'] = entity.username
                     self.session['name'] = entity.name
                     self.session['userType'] = entity.account_type
+<<<<<<< HEAD
+                    self.session['id'] = entity.id
+
+=======
+>>>>>>> ce8dec6fd25213df65cbc117439931524e2af38f
                     account_id = entity.id
                     account_creation_date = entity.creation_date.strftime("%m/%d/%Y %H:%M:%S")
                     account_last_modified = entity.last_modified.strftime("%m/%d/%Y %H:%M:%S")
@@ -105,26 +116,74 @@ class AccountHandler(session_handler.BaseHandler):
         response = create_entities.AccountHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
 
+    def patch(self):
+        body = yaml.safe_load(self.request.body)
+        logging.info(body)
+		
+        # IF PASSWORD IS SENT, CONFIRM CURRENT PASSWORD IS CORRECT
+        if "currentPassword" in body:
+            account = create_entities.Account.query(create_entities.Account.username == self.session.get('user')).get()
+            if body["currentPassword"] != account.password:
+                self.response.write(json.dumps({"errors": "Current password is incorrect"}))
+                return
+    
+        # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
+        body['id'] = self.session.get('id')
+        ah = create_entities.AccountHandler()
+        response = create_entities.AccountHandler.patch(ah, body)
+        logging.info(response)
+        self.response.write(json.dumps({ "userDetails": response }))
+        
+
 
 class SendAwardHandler(session_handler.BaseHandler):
 
     def post(self):
-        # SAVE AWARD IN DB
-        ah = create_entities.AwardHandler()
+        # PARSE DATA FROM REQUEST
         body = yaml.safe_load(self.request.body)
         body["sender"] = self.session.get("user")
+        sender = body["sender"]
+        recipient_name = body["recipient_name"]
+        recipient_email = body["recipient_email"]
+        logging.info(body)
+	
+        # SAVE AWARD IN DB
+        ah = create_entities.AwardHandler()
         response = create_entities.AwardHandler.post(ah, body)
         self.response.write(response)
+		
+        # CONSTRUCT AWARD VIA LATEX
+        employee_of_the_month_message = "Employee of the Month"
+        img_dir = '../img/'
+        pdf_dir = 'rsc/pdf/'
+        img_name = 'signature.png'
+
+        doc = Document('test')
+        doc.append('Congratulations! This award is for \n')
+        doc.append(italic(recipient_name))
+        doc.append('\nFor \n')
+        doc.append(italic(employee_of_the_month_message))
+        with doc.create(Figure(position='h!')) as signature_img:
+            signature_img.add_image(img_dir + img_name, width='120px')
+
+        doc.generate_pdf('/rsc/pdf/test', clean_tex=True, compiler='pdflatex')
+
 
         # SEND EMAIL
-        sender = body["sender"]
-        recipient_email=body["recipient_email"]
-        # self.response.write("award sent")
+        filename = pdf_dir + 'test.pdf'
+        f = open(filename, 'r')
         mail.send_mail(sender=sender,
         to=recipient_email,
+<<<<<<< HEAD
+        subject="Congratulations " + recipient_name + "! You received an award!",
+        body="See attachment.",
+        attachments=[(filename, f.read())])
+        
+=======
         subject="Congratulations " + body["recipient_name"] + "! You received an award!",
         body="See attachment.")
 
+>>>>>>> ce8dec6fd25213df65cbc117439931524e2af38f
 
 class ApiAwardHandler(webapp2.RequestHandler):
     def post(self):
