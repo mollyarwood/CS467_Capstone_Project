@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 class EditAccount extends Component {
   constructor(props) {
@@ -25,19 +26,68 @@ class EditAccount extends Component {
 
   updateUsername(event) {
     event.preventDefault();
-    alert('username');
+      const username = event.target.username.value;
+      axios.patch('/accounts',
+        {
+          username,
+        })
+        .then((response) => {
+          if (response.data.userDetails) {
+            this.props.changePage({ target: { name: 'view' } });
+          } else if (response.data.errors) {
+            this.setState({
+              errors: [ response.data.errors ]
+            });
+          }
+        })
   }
 
   updateName(event) {
     event.preventDefault();
-    alert('name');
+      const name = event.target.name.value;
+      axios.patch('/accounts',
+        {
+          name,
+        })
+        .then((response) => {
+          if (response.data.userDetails) {
+            this.props.changePage({ target: { name: 'view' } });
+          } else if (response.data.errors) {
+            this.setState({
+              errors: [ response.data.errors ]
+            });
+          }
+        })
   }
 
   updatePassword(event) {
-    event.preventDefault();
-    alert('password');
+	  event.preventDefault();
+      const newPassword = event.target.newPassword.value;
+	  const confirmPassword = event.target.confirmPassword.value;
+	  const currentPassword = event.target.currentPassword.value;
+	  if (newPassword == confirmPassword) {
+		  axios.patch('/accounts',
+			{
+			  currentPassword,
+			  newPassword,
+			})
+			.then((response) => {
+			  if (response.data.userDetails) {
+				this.props.changePage({ target: { name: 'view' } });
+			  } else if (response.data.errors) {
+				this.setState({
+				  errors: [ response.data.errors ]
+				});
+			  }
+			})
+	  } else {
+		  this.setState({
+			  errors: [ "Passwords do not match"]
+		  })
+	  }
   }
 
+ 
   render() {
     return (
       <div>
