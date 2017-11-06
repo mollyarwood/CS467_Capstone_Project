@@ -8,6 +8,7 @@ class ViewAwards extends Component {
         awardsRecieved: []
       }
 
+      this.renderAwards = this.renderAwards.bind(this);
       this.deleteAward = this.deleteAward.bind(this);
   }
 
@@ -33,10 +34,33 @@ class ViewAwards extends Component {
     });
   }
 
+  renderAwards() {
+    if (this.state.awardsRecieved.length > 0) {
+      return (this.state.awardsRecieved.map( award =>
+        <tr className="row" key={award.id}>
+          <td className="col-md-4">{award.name}</td>
+          <td className="col-md-3">{award.date}</td>
+          <td className="col-md-4">{award.givenBy}</td>
+          <td className="col-md-1">
+            <button id={award.id} className="btn btn-danger" onClick={this.deleteAward}>
+              DELETE
+            </button>
+          </td>
+        </tr>))
+    } else {
+      return (
+        <tr>
+          <td style={{textAlign: 'center', fontSize: '20px', paddingTop: '50px'}}>No Awards Recieved</td>
+        </tr>
+      )
+    }
+
+  }
+
   render() {
     return (
       <div>
-        <h4>Awards Recieved</h4>
+        <h4 className="spacer-bottom">Awards Recieved</h4>
         <table className="table">
           <thead>
             <tr className="row">
@@ -48,17 +72,7 @@ class ViewAwards extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.awardsRecieved.map( award =>
-              <tr className="row" key={award.id}>
-                <td className="col-md-4">{award.name}</td>
-                <td className="col-md-3">{award.date}</td>
-                <td className="col-md-4">{award.givenBy}</td>
-                <td className="col-md-1">
-                  <button id={award.id} className="btn btn-danger" onClick={this.deleteAward}>
-                    DELETE
-                  </button>
-                </td>
-              </tr>)}
+            {this.renderAwards()}
           </tbody>
         </table>
       </div>

@@ -74,7 +74,7 @@ class SendAward extends Component {
             <div className="form-group row">
               <label htmlFor="password" className="col-form-label">Recipient Name:</label>
               <div className="form-group">
-                <select className="form-control" id="sel1">
+                <select className="form-control" id="username">
                   {this.state.accounts.map((account) => <option key={account.id}>{account.username}</option>)}
                 </select>
               </div>
