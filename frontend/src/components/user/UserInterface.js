@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import SendAward from './SendAward';
+import SendAward from './SendAward_old';
 import ViewAwards from './ViewAwards';
 import EditAccount from './EditAccount';
 
@@ -8,7 +8,7 @@ class UserInterface extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      currentPage: 'ViewAwards' // home, edit account, send award
+      currentPage: 'ViewAwards'
     });
 
     this.changePage = this.changePage.bind(this);
@@ -27,11 +27,11 @@ class UserInterface extends Component {
       case 'ViewAwards':
         return <ViewAwards />;
       case 'SendAward':
-        return <SendAward />;
+        return <SendAward changePage={this.changePage} />;
       case 'EditAccount':
         return <EditAccount />;
       default:
-        return <ViewAwards />;
+        return <ViewAwards name={this.props.name} />;
     }
   }
 
@@ -71,7 +71,7 @@ class UserInterface extends Component {
     return (
       <div className="col-md-10 col-md-offset-1">
         <div className="row">
-          <div className="col-md-11"><h1>User Home</h1></div>
+          <div className="col-md-11 spacer-bottom"><h1>User Interface</h1></div>
           <div className="col-md-1 pull-right">
             <button className="btn btn-primary" onClick={this.props.logOut}>Log Out</button>
           </div>

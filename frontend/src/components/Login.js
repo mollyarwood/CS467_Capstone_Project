@@ -16,7 +16,6 @@ class Login extends Component {
     };
   }
 
-
   changePage(event) {
     const newPage = event.target.name;
     this.setState({
@@ -24,16 +23,19 @@ class Login extends Component {
     });
   }
 
-
   logIn(event) {
     event.preventDefault();
     const username = event.target.username.value;
     const password = event.target.password.value;
     axios.post('/auth', { username, password })
       .then((response) => {
-        if (response.data.creation_date === response.data.last_modified) {
-          console.log(response.data);
-          this.setState({ currentPage: 'firstTime', userType: response.data.userType });
+        if (response.data.loggedIn &&
+          response.data.creation_date === response.data.last_modified) {
+          this.setState({
+            currentPage: 'firstTime',
+            accountId: response.data.id,
+            userType: response.data.userType
+          });
         } else if (response.data.loggedIn) {
           this.props.setLoggedIn(response.data);
         } else {
@@ -44,7 +46,6 @@ class Login extends Component {
       })
   }
 
-
   renderErrors() {
     if(this.state.errors.length !== 0) {
       return <div className="alert alert-danger col-md-6 col-md-offset-3"><ul>
@@ -53,7 +54,6 @@ class Login extends Component {
     }
     return <div></div>;
   }
-
 
   render() {
     if (this.state.currentPage === 'login') {
@@ -80,7 +80,7 @@ class Login extends Component {
         </div>
       );
     } else if (this.state.currentPage === 'firstTime') {
-      return <FirstTimeLogin onSubmit={this.props.setLoggedIn} userType={this.state.userType}/>
+      return <FirstTimeLogin onSubmit={this.props.setLoggedIn} userType={this.state.userType} accountId={this.state.accountId}/>
     } else if (this.state.currentPage === 'forgotPassword') {
       return <div>Forgot password</div>
     } else if (this.state.currentPage === 'recover') {

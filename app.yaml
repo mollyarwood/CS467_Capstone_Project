@@ -43,6 +43,6 @@ handlers:
 - url: /
   static_dir: frontend/public
 
-skip_files: 
+skip_files:
 - ^(.*/)?.*/node_modules(/.*)?
 - ^(.*/)?.*/build/(/.*)?

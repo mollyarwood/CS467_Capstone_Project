@@ -127,31 +127,37 @@ class AccountHandler(session_handler.BaseHandler):
 		return json.dumps(account_dict, cls=MyEncoder)
 
 
-
-	def patch(self, id=None):
-		if id:
+	def patch(self, body=None):
+		if body:
+			account_data = body
+		else:
 			account_data = json.loads(self.request.body)
-			account = ndb.Key(urlsafe=id).get()
+			
+		account = Account.query(Account.id == account_data['id']).get()
+		
+		if account != None:
+			if 'username' in account_data:
+				account.username = account_data['username']
+			if 'newPassword' in account_data:
+				account.password = account_data['newPassword']
+			if 'name' in account_data:
+				account.name = account_data['name']
+			if 'signature' in account_data:
+				account.signature = account_data['signature']
 
-			if account != None:
-				if 'username' in account_data:
-					account.username = account_data['username']
-				if 'password' in account_data:
-					account.password = account_data['password']
-				if 'name' in account_data:
-					account.name = account_data['name']
-				if 'account_type' in account_data:
-					account.account_type = account_data['account_type']
-				if 'signature' in account_data:
-					account.signature = account_data['signature']
-
-				account.put()
-				return json.dumps(account.to_dict(), cls=MyEncoder)
-				# self.response.write(json.dumps(account.to_dict()))
-			else:
-				return "Error: accound ID not found"
-				# self.response.write("account ID not found")
-
+			account.put()
+			account_dict = account.to_dict()
+			account_dict = {
+			"userDetails": account_dict
+			}  
+			
+		else:
+			account_dict = dict()
+			account_dict = {
+			"errors": "ERROR"
+			}
+			
+		return json.dumps(account_dict, cls=MyEncoder)
 
 
 	def get(self, id=None):
@@ -328,3 +334,5 @@ class QueryHandler(session_handler.BaseHandler):
 			
 
 		self.response.write(json.dumps(resp))
+
+
