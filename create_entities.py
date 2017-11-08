@@ -289,3 +289,42 @@ class RecoverHandler(session_handler.BaseHandler):
 		}
 		self.response.write(json.dumps(resp))
 
+
+
+class QueryHandler(session_handler.BaseHandler):
+
+	def post(self, option=None):
+		option_data = json.loads(self.request.body)
+
+
+		#Number of each award type given out
+		if option_data["option"] == 1:
+			count1 = 0
+			query1 = Award.query(Award._properties["award_type"] == 'empOfMonth')
+			results1 = list(query1.fetch())
+			for award1 in results1:
+				count1 += 1
+
+
+			count2 = 0
+			query2 = Award.query(Award._properties["award_type"] == 'empOfYear')
+			results2 = list(query2.fetch())
+			for award2 in  results2:
+				count2 += 1
+
+			resp =  {
+				'empOfMonth' : count1,
+				'empOfYear' : count2
+			}
+
+
+		#Name of people who have each received award type
+		if option_data["option"] == 2:
+			query = Award.query().fetch(projection=[Award.award_type,Award.recipient_name])
+
+			resp = []
+			for result in query:
+				resp.append({'award type' : result.award_type, 'recipient' : result.recipient_name})
+			
+
+		self.response.write(json.dumps(resp))

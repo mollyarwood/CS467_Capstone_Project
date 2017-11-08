@@ -102,7 +102,8 @@ class SendAwardHandler(session_handler.BaseHandler):
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
         body = yaml.safe_load(self.request.body)
-        body["sender"] = self.session.get("user")
+        #body["sender"] = self.session.get("user")
+        body["sender"] = "Bob"
         response = create_entities.AwardHandler.post(ah, body)
         self.response.write(response)
 
@@ -186,6 +187,7 @@ app = webapp2.WSGIApplication([
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
-    ('/api/accounts', ApiAccountCollectionHandler)
+    ('/api/accounts', ApiAccountCollectionHandler),
+    ('/query', create_entities.QueryHandler)
 ], config=config, debug=True)
 # [END app]

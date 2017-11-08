@@ -37,6 +37,9 @@ handlers:
 - url: /recover
   script: main.app
 
+- url: /query
+  script: main.app
+
 - url: /
   static_dir: frontend/public
 
