@@ -10,68 +10,90 @@ class SendAward extends Component {
     this.renderErrors = this.renderErrors.bind(this);
 
     this.state = {
-      errors: []
+      errors: [],
+      accounts: []
     }
+  }
+  
+    componentWillMount() {
+    axios.get(`/accounts?type=user`)
+      .then((response) => {
+        if (response.data.accounts) {
+          this.setState({
+            accounts: response.data.accounts,
+            isLoading: false
+          });
+        }
+      });
   }
 
   sendAward(event) {
     event.preventDefault();
      // const user_name = 'test user name';
-      const recipient_name = event.target.recipient_name.value;
+      const recipient_name = event.target.username.value;
       const recipient_email = event.target.recipient_email.value;
-	 const award_type = event.target.award_type.value;
+	  const award_type = event.target.awardType.value;
       axios.post('/sendAward',
         {
           recipient_name,
           recipient_email,
-		award_type
+		  award_type
+        }).then((response) => {
+          if (response.data.award) {
+            this.props.changePage({ target: { name: 'ViewAwards' } });
+          } else if (response.data.errors) {
+            this.setState({
+              errors: [ response.data.errors ]
+            });
+          }
         })
-     //    .then((response) => {
-     //      if (response.data.userDetails) {
-     //        this.props.changePage({ target: { name: 'view' } });
-     //      } else if (response.data.errors) {
-     //        this.setState({
-     //          errors: [ response.data.errors ]
-     //        });
-     //      }
-     //    })
   }
 
-  renderErrors() {
-    // if(this.state.errors.length !== 0) {
-    //   return <div className="alert alert-danger col-md-6 col-md-offset-3"><ul>
-    //     {this.state.errors.map(error => <li key={error}>{error}</li>)}
-    //   </ul></div>
-    // }
+ renderErrors() {
+    if(this.state.errors.length !== 0) {
+      return <div className="alert alert-danger col-md-6 col-md-offset-3"><ul>
+        {this.state.errors.map(error => <li key={error}>{error}</li>)}
+      </ul></div>
+    }
     return <div></div>;
   }
-
   render() {
     return (
       <div>
         <div>
-          <h4 className="text-center spacer-bottom">Send Award (dev)</h4>
+          <h4 className="text-center spacer-bottom">Send an Award</h4>
         </div>
         {this.renderErrors()}
           <form className="col-md-4 col-md-offset-4" onSubmit={this.sendAward}>
-            <div className="form-group row">
-              <label htmlFor="recipient_name" className="col-form-label">Recipient Name:</label>
-              <input className="form-control" type="text" name="recipient_name" />
+            <label htmlFor="awardType" className="col-form-label">Award Type:</label>
+            <div className="form-check" name="awardType">
+              <label className="form-check-label">
+                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios1" value="employee_of_the_week" />
+                  Employee of the Week
+              </label>
             </div>
-            <div className="form-group row">
-              <label htmlFor="recipient_email" className="col-form-label">Recipient Email:</label>
-              <input className="form-control" type="email" name="recipient_email" />
+            <div className="form-check">
+              <label className="form-check-label">
+                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios2" value="employee_of_the_month" />
+                  Employee of the Month
+              </label>
             </div>
-		  <div className="form-group row">
-              <label htmlFor="award_type" className="col-form-label">Award Type:</label>
 
-              <input className="form-control" type="radio" name="award_type" id="best_employee" value="best_employee"/>
-		    <label htmlFor="best_employee">Best Employee</label>
-		    <input className="form-control" type="radio" name="award_type" id="worst_employee" value="worst_employee"/>
-		    <label htmlFor="worst_employee">Worst Employee</label>
+            <div className="form-group row">
+              <label htmlFor="password" className="col-form-label">Recipient Name:</label>
+              <div className="form-group">
+                <select className="form-control" id="username" name="username">
+                  {this.state.accounts.map((account) => <option key={account.id}>{account.username}</option>)}
+                </select>
+              </div>
             </div>
+              <div className="form-group row">
+                <label htmlFor="recipient_email" className="col-form-label">Recipient's Email Address: </label>
+                <input className="form-control" type="text" name="recipient_email" />
+              </div>
             <div className="row">
-              <button className="btn btn-primary" type='submit'>Send Award</button>
+              <button className="btn btn-primary" type='submit'>Send</button>
+              <button className="btn pull-right" type="button" name='ViewAwards' onClick={this.props.changePage}>Cancel</button>
             </div>
           </form>
       </div>
