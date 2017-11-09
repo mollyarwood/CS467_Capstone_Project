@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import SendAward from './SendAward_old';
+import SendAward from './SendAward';
 import ViewAwards from './ViewAwards';
 import EditAccount from './EditAccount';
 
