@@ -44,10 +44,14 @@ class EditAccount extends Component {
   }
 
   render() {
+    const accountInfo = this.props.accountInfo;
+
     return (
       <div>
         <div>
-          <h4 className="text-center spacer-bottom">Edit USERNAME's Account</h4>
+          <h4 className="text-center spacer-bottom">
+            Edit <span className="text-primary">{accountInfo.username}</span>'s Account
+          </h4>
         </div>
         {this.renderErrors()}
           <form className="col-md-4 col-md-offset-4" onSubmit={this.editAccount}>

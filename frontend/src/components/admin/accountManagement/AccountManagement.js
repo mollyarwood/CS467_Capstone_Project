@@ -12,10 +12,11 @@ class AccountManagement extends Component {
       this.state = {
         accountType: this.props.type,
         currentPage: 'view',
-        accounts: []
+        selectedUser: null
       }
 
       this.changePage = this.changePage.bind(this);
+      this.changeSelectedUser = this.changeSelectedUser.bind(this);
   }
 
   changePage(event) {
@@ -24,6 +25,11 @@ class AccountManagement extends Component {
       currentPage: newPage
     });
   }
+
+  changeSelectedUser(newUser) {
+      this.setState({ selectedUser: newUser });
+  }
+
   render() {
     if (this.state.currentPage === 'add') {
       return (
@@ -34,12 +40,16 @@ class AccountManagement extends Component {
       );
     } else if (this.state.currentPage === 'edit') {
       return (
-        <EditAccount changePage={this.changePage} />
+        <EditAccount
+          changePage={this.changePage}
+          accountInfo={this.state.selectedUser}
+        />
       );
     } else if (this.state.currentPage === 'view') {
       return (
         <ViewAccounts
           changePage={this.changePage}
+          changeSelectedUser={this.changeSelectedUser}
           accountType={this.state.accountType}
         />
       );

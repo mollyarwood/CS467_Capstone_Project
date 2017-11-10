@@ -13,6 +13,7 @@ class ViewAccounts extends Component {
       }
 
       this.deleteAccount = this.deleteAccount.bind(this);
+      this.openEditAccount = this.openEditAccount.bind(this);
   }
 
   componentWillMount() {
@@ -25,6 +26,13 @@ class ViewAccounts extends Component {
           });
         }
       });
+  }
+
+  openEditAccount(event) {
+    const accountId = event.target.id;
+    const accountInfo = _.find(this.state.accounts, account => account.id === accountId);
+    this.props.changeSelectedUser(accountInfo);
+    this.props.changePage(event);
   }
 
   deleteAccount(event) {
@@ -69,7 +77,11 @@ class ViewAccounts extends Component {
                     <td className="col-md-5">{account.username}</td>
                     <td className="col-md-5">{account.name || 'None'}</td>
                     <td className="col-md-1">
-                      <button id={account.id} className="btn btn-default" name="edit" onClick={this.props.changePage}>
+                      <button
+                        id={account.id}
+                        className="btn btn-default"
+                        name="edit"
+                        onClick={this.openEditAccount}>
                         Edit
                       </button>
                     </td>
