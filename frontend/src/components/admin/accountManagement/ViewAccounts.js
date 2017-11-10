@@ -14,6 +14,7 @@ class ViewAccounts extends Component {
 
       this.deleteAccount = this.deleteAccount.bind(this);
       this.openEditAccount = this.openEditAccount.bind(this);
+      this.renderAccountName = this.renderAccountName.bind(this);
   }
 
   componentWillMount() {
@@ -51,6 +52,10 @@ class ViewAccounts extends Component {
     });
   }
 
+  renderAccountName(account) {
+    return account.name ? account.name : <span className="text-warning">None</span>;
+  }
+
   render() {
     if (this.state.isloading) {
       return <ReactSpinner config={{ width: 5, radius: 18 }} />;
@@ -75,7 +80,7 @@ class ViewAccounts extends Component {
                 this.state.accounts.map( account =>
                   <tr className="row" key={account.id}>
                     <td className="col-md-5">{account.username}</td>
-                    <td className="col-md-5">{account.name || 'None'}</td>
+                    <td className="col-md-5">{this.renderAccountName(account)}</td>
                     <td className="col-md-1">
                       <button
                         id={account.id}
