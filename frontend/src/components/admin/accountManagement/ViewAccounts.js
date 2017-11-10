@@ -11,6 +11,8 @@ class ViewAccounts extends Component {
         accounts: [],
         isLoading: true
       }
+
+      this.deleteAccount = this.deleteAccount.bind(this);
   }
 
   componentWillMount() {
@@ -23,6 +25,22 @@ class ViewAccounts extends Component {
           });
         }
       });
+  }
+
+  deleteAccount(event) {
+    event.preventDefault();
+    const accountId = event.target.id;
+    const url = '/accounts/' + accountId;
+
+    axios.delete(url).then((response) => {
+      if (response.data.deleted) {
+        const newAccountList = this.state.accounts
+          .filter(account => account.id !== accountId);
+        this.setState({
+          accounts: newAccountList
+        });
+      }
+    });
   }
 
   render() {
@@ -56,7 +74,7 @@ class ViewAccounts extends Component {
                       </button>
                     </td>
                     <td className="col-md-1">
-                      <button id={account.id} className="btn btn-danger" onClick={this.props.deleteAccount}>
+                      <button id={account.id} className="btn btn-danger" onClick={this.deleteAccount}>
                         Delete
                       </button>
                     </td>

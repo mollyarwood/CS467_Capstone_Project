@@ -29,7 +29,7 @@ class UserInterface extends Component {
       case 'SendAward':
         return <SendAward changePage={this.changePage} />;
       case 'EditAccount':
-        return <EditAccount />;
+        return <EditAccount changePage={this.changePage} />;
       default:
         return <ViewAwards name={this.props.name} />;
     }

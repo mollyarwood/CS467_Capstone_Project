@@ -15,25 +15,7 @@ class AccountManagement extends Component {
         accounts: []
       }
 
-      this.deleteAccount = this.deleteAccount.bind(this);
       this.changePage = this.changePage.bind(this);
-  }
-
-  deleteAccount(event) {
-    event.preventDefault();
-    const accountId = event.target.id;
-    const url = '/accounts/' + accountId;
-
-    axios.delete(url).then((response) => {
-      console.log(response.data.deleted);
-      if (response.data.deleted) {
-        const newAccountList = this.state.accounts
-          .filter(account => account.id !== accountId);
-        this.setState({
-          accounts: newAccountList
-        });
-      }
-    }); 
   }
 
   changePage(event) {
@@ -44,14 +26,20 @@ class AccountManagement extends Component {
   }
   render() {
     if (this.state.currentPage === 'add') {
-      return <AddAccount accountType={this.state.accountType} changePage={this.changePage} />
+      return (
+        <AddAccount
+          accountType={this.state.accountType}
+          changePage={this.changePage}
+        />
+      );
     } else if (this.state.currentPage === 'edit') {
-      return <EditAccount changePage={this.changePage} />
+      return (
+        <EditAccount changePage={this.changePage} />
+      );
     } else if (this.state.currentPage === 'view') {
       return (
         <ViewAccounts
           changePage={this.changePage}
-          deleteAccount={this.deleteAccount}
           accountType={this.state.accountType}
         />
       );
