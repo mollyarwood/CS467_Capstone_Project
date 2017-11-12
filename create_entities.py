@@ -83,7 +83,7 @@ class AwardCollectionHandler(session_handler.BaseHandler):
 					"date_sent": award['date_sent'].strftime("%m/%d/%Y %H:%M:%S"),
 				})
 		return awards
-			
+
 
 
 
@@ -132,9 +132,9 @@ class AccountHandler(session_handler.BaseHandler):
 			account_data = body
 		else:
 			account_data = json.loads(self.request.body)
-			
+
 		account = Account.query(Account.id == account_data['id']).get()
-		
+
 		if account != None:
 			if 'username' in account_data:
 				account.username = account_data['username']
@@ -149,14 +149,14 @@ class AccountHandler(session_handler.BaseHandler):
 			account_dict = account.to_dict()
 			account_dict = {
 			"userDetails": account_dict
-			}  
-			
+			}
+
 		else:
 			account_dict = dict()
 			account_dict = {
 			"errors": "ERROR"
 			}
-			
+
 		return json.dumps(account_dict, cls=MyEncoder)
 
 
@@ -285,7 +285,7 @@ class RecoverHandler(session_handler.BaseHandler):
 
 		message.to = em
 
-		if p != None: 
+		if p != None:
 			message.body = "Your password is {}".format(p)
 		else:
 			message.body = "Sorry, there is no user with that email in our account."
@@ -301,10 +301,10 @@ class QueryHandler(session_handler.BaseHandler):
 
 	def post(self, option=None):
 		option_data = json.loads(self.request.body)
-
+		resp = None
 
 		#Number of each award type given out
-		if option_data["option"] == 1:
+		if option_data["option"] == '1':
 			count1 = 0
 			query1 = Award.query(Award._properties["award_type"] == 'empOfMonth')
 			results1 = list(query1.fetch())
@@ -325,14 +325,12 @@ class QueryHandler(session_handler.BaseHandler):
 
 
 		#Name of people who have each received award type
-		if option_data["option"] == 2:
+		if option_data["option"] == '2':
 			query = Award.query().fetch(projection=[Award.award_type,Award.recipient_name])
 
 			resp = []
 			for result in query:
 				resp.append({'award type' : result.award_type, 'recipient' : result.recipient_name})
-			
+
 
 		self.response.write(json.dumps(resp))
-
-

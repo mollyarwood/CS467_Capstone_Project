@@ -120,26 +120,26 @@ class AccountHandler(session_handler.BaseHandler):
     def delete(self):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.delete(ah, yaml.safe_load(self.request.body))
-        self.response.write(response)		
-		
+        self.response.write(response)
+
     def patch(self):
         body = yaml.safe_load(self.request.body)
         logging.info(body)
-		
+
         # IF PASSWORD IS SENT, CONFIRM CURRENT PASSWORD IS CORRECT
         if "currentPassword" in body:
             account = create_entities.Account.query(create_entities.Account.username == self.session.get('user')).get()
             if body["currentPassword"] != account.password:
                 self.response.write(json.dumps({"errors": "Current password is incorrect"}))
                 return
-    
+
         # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
         body['id'] = self.session.get('id')
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.patch(ah, body)
         logging.info(response)
         self.response.write(json.dumps({ "userDetails": response }))
-        
+
 
 
 class SendAwardHandler(session_handler.BaseHandler):
@@ -153,13 +153,13 @@ class SendAwardHandler(session_handler.BaseHandler):
         recipient_email = body["recipient_email"]
         award_type = body["award_type"]
         logging.info(body)
-	
+
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
         response = create_entities.AwardHandler.post(ah, body)
-		
 
-		
+
+
         # CREATE PDF BYTESTREAM
         pdfFile = StringIO()
 
@@ -194,7 +194,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.line(7*inch,.2*inch,9*inch,.2*inch)
         c.drawString(7*inch, 0*inch, "SIGNATURE")
         c.drawImage('signature.jpg', 7*inch, .3*inch, 1.5*inch, 1.5*inch)
-        
+
         c.setFont("Times-Roman", 18)
         c.drawString(3.5*inch, .3*inch, sender)
         c.save()
@@ -207,10 +207,10 @@ class SendAwardHandler(session_handler.BaseHandler):
         subject="Congratulations " + recipient_name + "! You received an award!",
         body="See attachment.",
         attachments=[(filename, pdfFile.getvalue())])
-		
+
 		# WRITE RESPONSE
         self.response.write(json.dumps({"award": response}))
- 
+
 
 class ApiAwardHandler(webapp2.RequestHandler):
     def post(self):
@@ -294,7 +294,7 @@ app = webapp2.WSGIApplication([
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
-    ('/api/accounts', ApiAccountCollectionHandler)
+    ('/api/accounts', ApiAccountCollectionHandler),
+    ('/query', create_entities.QueryHandler)
 ], config=config, debug=True)
 # [END app]
-
