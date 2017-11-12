@@ -1,16 +1,39 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Dropzone from 'react-dropzone';
+import DropzoneComponent from 'react-dropzone-component';
+
+var ReactDOMServer = require('react-dom/server');
+
+var componentConfig = {
+    iconFiletypes: ['.jpg', '.png', '.gif'],
+    showFiletypeIcon: false,
+    postUrl: 'no-url',
+
+};
+
+var djsConfig = {
+  previewsContainer: document.querySelector('#sigPreview'),
+  maxFiles: 1,
+  autoProcessQueue: false,
+  previewTemplate: ReactDOMServer.renderToStaticMarkup(
+    <div className="">
+      <div className="">
+        <img data-dz-thumbnail="true" />
+      </div>
+    </div>
+  )
+}
+var eventHandlers = { addedfile: (file) => console.log(file) }
 
 class FirstTimeLogin extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      errors: []
+      errors: [],
+      preview: null
     };
 
-    this.uploadSigniture = this.uploadSigniture.bind(this);
     this.validateForm = this.validateForm.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
   }
@@ -48,15 +71,10 @@ class FirstTimeLogin extends Component {
     const name = event.target.name.value;
     const password = event.target.newPassword.value;
     const signiture = "";
-    axios.patch(`/api/account/${this.props.accountId}`, { name, password })
+    axios.patch(`/accounts`, { name, password })
       .then((response) => {
         this.props.onSubmit({userType: this.props.userType});
       })
-  }
-
-  uploadSigniture(event) {
-      alert('upload signiture here');
-      event.preventDefault();
   }
 
   renderErrors() {
@@ -88,15 +106,14 @@ class FirstTimeLogin extends Component {
             <label htmlFor="nameame" className="col-form-label">Preferred Name</label>
             <input className="form-control" type="text" id="name" name="name" />
           </div>
-          <div className="row">
-            <Dropzone
-                  multiple={false}
-                  accept="image/*"
-                  onDrop={this.uploadSigniture}>
-                  <p>Drop an image or click to select a file to upload.</p>
-            </Dropzone>
-              <div>Upload an Image of Your Signature</div>
-            <button className="btn center-block" onClick={this.uploadSigniture}>Upload</button>
+          <div className="signiture-upload form-group row">
+            Upload an Image of Your Signature
+            <DropzoneComponent
+              config={componentConfig}
+              eventHandlers={eventHandlers}
+              djsConfig={djsConfig}
+            ><div className="dz-message">Click or drag and drop file here</div></DropzoneComponent>
+            <div id="sigPreview" className="dropzone-previews"></div>
           </div>
           <div className="row spacer">
             <button className="btn btn-primary center-block" type='submit'>Submit</button>
