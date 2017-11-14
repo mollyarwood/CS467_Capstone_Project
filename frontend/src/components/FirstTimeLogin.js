@@ -48,7 +48,7 @@ class FirstTimeLogin extends Component {
     const name = event.target.name.value;
     const password = event.target.newPassword.value;
     const signiture = "";
-    axios.patch(`/api/account/${this.props.accountId}`, { name, password })
+    axios.patch(`/accounts`, { name, password })
       .then((response) => {
         this.props.onSubmit({userType: this.props.userType});
       })
