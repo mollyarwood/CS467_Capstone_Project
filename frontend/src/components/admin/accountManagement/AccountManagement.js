@@ -35,23 +35,20 @@ class AccountManagement extends Component {
       return (
         <AddAccount
           accountType={this.state.accountType}
-          changePage={this.changePage}
-        />
+          changePage={this.changePage} />
       );
     } else if (this.state.currentPage === 'edit') {
       return (
         <EditAccount
           changePage={this.changePage}
-          accountInfo={this.state.selectedUser}
-        />
+          accountInfo={this.state.selectedUser} />
       );
     } else if (this.state.currentPage === 'view') {
       return (
         <ViewAccounts
           changePage={this.changePage}
           changeSelectedUser={this.changeSelectedUser}
-          accountType={this.state.accountType}
-        />
+          accountType={this.state.accountType} />
       );
     }
   }

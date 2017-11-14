@@ -26,10 +26,6 @@ config['webapp2_extras.sessions'] = {
     'secret_key': key,
 }
 
-# THIS ALLOWS FOR PATCH REQUESTS
-allowed_methods = webapp2.WSGIApplication.allowed_methods
-new_allowed_methods = allowed_methods.union(('PATCH',))
-webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 #extending the json class to handle datetime
 class MyEncoder(json.JSONEncoder):
@@ -118,8 +114,9 @@ class AccountHandler(session_handler.BaseHandler):
         self.response.write(response)
 
     def delete(self):
+        id = self.request.GET['id']
         ah = create_entities.AccountHandler()
-        response = create_entities.AccountHandler.delete(ah, yaml.safe_load(self.request.body))
+        response = create_entities.AccountHandler.delete(ah, id)
         self.response.write(response)		
 		
     def patch(self):
@@ -174,9 +171,9 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.line(.5*inch,5.2*inch,8.5*inch,5.2*inch)
         c.setFont("Times-Roman", 18)
         c.drawCentredString(9*inch/2.0, 4*inch, "THE CORPORATION PROUDLY PRESENTS THE AWARD OF")
-        if award_type == "employee_of_the_week":
+        if award_type == "employeeOfWeek":
             award_type_msg = "EMPLOYEE OF THE WEEK"
-        elif award_type == "employee_of_the_month":
+        elif award_type == "employeeOfMonth":
             award_type_msg = "EMPLOYEE OF THE MONTH"
         c.setFont("Times-Bold", 26)
         c.drawCentredString(9*inch/2.0, 3.5*inch, award_type_msg)
@@ -269,15 +266,6 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
 
 
 
-#class PassHandler(session_handler.BaseHandler):
-
-#   def post(self):
-#        ah = create_entities.RecoverHandler()
-#        response['form'] = create_entities.RecoverHandler.post()
-        #self.response.write(response)
-#        self.response.write("hi there")
-
-
 # [START app]
 
 allowed_methods = webapp2.WSGIApplication.allowed_methods
@@ -288,13 +276,14 @@ app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
-    ('/accounts/(.*)', create_entities.AccountHandler),
+    ('/accounts/(.*)', AccountHandler),
     ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),
     ('/api/awards', ApiAwardCollectionHandler),
     ('/api/account/(.*)', ApiAccountHandler),
-    ('/api/accounts', ApiAccountCollectionHandler)
+    ('/api/accounts', ApiAccountCollectionHandler),
+    ('/query', create_entities.QueryHandler)
 ], config=config, debug=True)
 # [END app]
 
