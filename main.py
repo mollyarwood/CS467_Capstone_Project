@@ -8,6 +8,7 @@ import binascii
 import logging
 import datetime
 import urllib
+import re
 from cStringIO import StringIO
 from time import mktime
 from google.appengine.api import mail
@@ -59,6 +60,13 @@ class AuthHandler(session_handler.BaseHandler):
         username_entered = str(post_data['username'])
         password_entered = str(post_data['password'])
         userFound = False
+
+        #check username is an email address
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", username_entered):
+            return self.response.write(json.dumps({
+               "errors": "invalid login - not email address"
+            }))
+
 
         account_creation_date = ''
         account_last_modified = ''
