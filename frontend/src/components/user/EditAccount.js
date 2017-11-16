@@ -9,6 +9,7 @@ class EditAccount extends Component {
       this.updateUsername = this.updateUsername.bind(this);
       this.updateName = this.updateName.bind(this);
       this.updatePassword = this.updatePassword.bind(this);
+	  this.updateSignature = this.updateSignature.bind(this);
 
       this.state = {
         errors: []
@@ -86,6 +87,85 @@ class EditAccount extends Component {
 		  })
 	  }
   }
+  
+	updateSignature(event) {
+		event.preventDefault();
+		
+		
+		var e = event.target.signature
+		var file = e.files[0]
+		
+		 console.log("File name: " + file.name)
+		console.log("File size: " + file.size)
+		console.log("Binary content: " + file.type)
+		
+		// var builder = new BlobBuilder()
+		// builder.append("img", file)
+		// var formdata = new FormData()
+		// formdata.append("name", "signature")
+		// formdata.append("img", file)
+		
+		var blob = new Blob([ file ], { type: "image/png" });
+		
+		// send via XHR 
+		var xhr = new XMLHttpRequest()
+		xhr.onload = function() {
+			console.log("Upload complete.")
+		};
+		xhr.open("PATCH", "/accounts", true)
+		xhr.send(blob);
+
+		// var signature = new FormData()
+		// var imagefile = document.querySelector('#signature')
+		// signature.append("img", imagefile.files[0])
+		
+		// console.log(signature.get("img"))
+		
+		// console.log(event.target.signature.value)
+		// var reader = new FileReader()
+		// // var signature = new 
+		// reader.readAsDataURL(event.target.signature.files[0])
+	   // reader.onload = function () {
+		   // // var signature = new Blob(reader.result, {type: "image/png"})
+			// return reader.result
+	   // };
+	   // reader.onerror = function (error) {
+		   // // var signature = error
+			// return error
+	   // };
+		
+			// var file = req.files.file;
+			// var path = file.path;
+			// var fsiz = file.size;
+			// var buffer = new Buffer(fsiz);
+
+			// fs.readFile(path, function (err, data) {
+				// console.log(err);
+				// console.log(data);
+			// });
+			
+			// console.log(event.target.signature)
+			
+		  // console.log(signature)
+		  // axios.patch('/accounts',
+			// {
+				// signature
+			// },
+			// {	
+				// headers: {
+					// 'Content-Type': 'multipart/form-data'
+				// }
+			// })
+			// .then((response) => {
+			  // if (response.data.userDetails) {
+				// this.props.changePage({ target: { name: 'view' } });
+			  // } else if (response.data.errors) {
+				// this.setState({
+				  // errors: [ response.data.errors ]
+				// });
+			  // }
+			// })
+    }
 
  
   render() {
@@ -115,6 +195,15 @@ class EditAccount extends Component {
                 <button className="btn btn-primary" type='submit'>Update Name</button>
               </div>
             </form>
+			<form onSubmit={this.updateSignature} encType="multipart/form-data" type="files">
+				<div className="form-group row">
+					<label htmlFor="signature" className="col-form-label">Signature</label>
+					<input className="form-control" type="file" id="signature" name="signature" />
+				</div>
+				<div className="row">
+					<button className="btn btn-primary spacer-bottom" type='submit'>Update Signature</button>
+				</div>
+			</form>
           </div>
           <div className="col-md-3 col-md-offset-2">
             <form onSubmit={this.updatePassword}>
