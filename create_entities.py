@@ -201,6 +201,7 @@ class AccountHandler(session_handler.BaseHandler):
 
 
 
+
 # This is the AwardHandler. It handles the post, get
 # and delete functions. It returns the JSON of the entity upon
 # success, or an error message if the ID is not found.
@@ -310,35 +311,55 @@ class QueryHandler(session_handler.BaseHandler):
     def post(self, option=None):
         option_data = json.loads(self.request.body)
 
+		#Number of each award type given out
+		if option_data["option"] == "numberOfEachAwardType":
+			count1 = 0
+			query1 = Award.query(Award._properties["award_type"] == 'employeeOfMonth')
+			results1 = list(query1.fetch())
+			count1 = len(results1)
 
-        #Number of each award type given out
-        if option_data["option"] == 1:
-            count1 = 0
-            query1 = Award.query(Award._properties["award_type"] == 'empOfMonth')
-            results1 = list(query1.fetch())
-            for award1 in results1:
-                count1 += 1
+			count2 = 0
+			query2 = Award.query(Award._properties["award_type"] == 'employeeOfWeek')
+			results2 = list(query2.fetch())
+			count2 = len(results2)
 
-
-            count2 = 0
-            query2 = Award.query(Award._properties["award_type"] == 'empOfYear')
-            results2 = list(query2.fetch())
-            for award2 in  results2:
-                count2 += 1
-
-                resp =  {
-                    'empOfMonth' : count1,
-                    'empOfYear' : count2
-                }
+			resp =  {
+				'employeeOfMonth' : count1,
+				'employeeOfWeek' : count2
+			}
 
 
-        #Name of people who have each received award type
-        if option_data["option"] == 2:
-            query = Award.query().fetch(projection=[Award.award_type,Award.recipient_name])
+		#Name of people who have each received award type
+		if option_data["option"] == "nameOfRecipientPerAwardType":
+			query = Award.query(projection=[Award.award_type,Award.recipient_name]).order(Award.recipient_name, Award.award_type).fetch()
 
-            resp = []
-            for result in query:
-                resp.append({'award type' : result.award_type, 'recipient' : result.recipient_name})
+			resp = []
+			l = len(query)
+			count = 1
+
+			for index, result in enumerate(query):
+				current = query[index]
+				if index < (l - 1):
+					nextOne = query[index + 1] 
+					if current.recipient_name == nextOne.recipient_name and current.award_type == nextOne.award_type:
+						count += 1
+					else:
+						resp.append({'awardType' : current.award_type, 'recipient' : current.recipient_name, 'count' : count})
+						count = 1
+				else:
+					resp.append({'awardType' : current.award_type, 'recipient' : current.recipient_name, 'count' : count})
+
+
+		#Award Type and Recipient, organized by date sent
+		if option_data["option"] == "awardsReceivedPerUnitTime":
+			query = Award.query(projection=[Award.award_type, Award.recipient_name, Award.date_sent]).order(Award.date_sent).fetch()
+
+			resp = []
+			for result in query:
+				date = json.dumps(result.date_sent.strftime('%Y-%m-%d'), cls=MyEncoder).strip('"')
+				resp.append({
+					'awardType' : result.award_type, 'recipient' : result.recipient_name, 'dateSent' : date})
+
 
 
         self.response.write(json.dumps(resp))
