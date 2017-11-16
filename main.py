@@ -137,7 +137,7 @@ class AccountHandler(session_handler.BaseHandler):
         header = self.request.headers
         logging.info(header)
         
-        if header['Content_Type'] == 'image/png':
+        if header['Content_Type'] == 'image/jpeg':
             
             # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
             body = dict()
@@ -177,7 +177,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         body = yaml.safe_load(self.request.body)
         body["sender"] = self.session.get('user')
         sender = body["sender"]
-        logging.info(sender)
+        # logging.info(sender)
         recipient_name = body["recipient_name"]
         recipient_email = body["recipient_email"]
         award_type = body["award_type"]
@@ -192,7 +192,11 @@ class SendAwardHandler(session_handler.BaseHandler):
         id = self.session.get("id")
         account = create_entities.Account.query(create_entities.Account.id == id).get()
         signature = account.signature
-        img = ImageReader(io.BytesIO(signature))
+        
+        
+        # LOAD THE JPG DIRECTLY, TO SEE IF THE BLOB IS INVALID
+        # img = canvas.ImageReader(StringIO(open('img.jpg', 'rb').read()))
+        img = canvas.ImageReader(StringIO(signature))
 		
         # CREATE PDF BYTESTREAM
         pdfFile = StringIO()
@@ -235,7 +239,7 @@ class SendAwardHandler(session_handler.BaseHandler):
 
         # SEND EMAIL
         filename = 'Award.pdf'
-        mail.send_mail(sender="donotrespond@plucky-paratext-180616.appspot.com",
+        mail.send_mail(sender="anything@cs467capstone.appspotmail.com",
         to=recipient_email,
         subject="Congratulations " + recipient_name + "! You received an award!",
         body="See attachment.",

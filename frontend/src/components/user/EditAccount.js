@@ -91,21 +91,29 @@ class EditAccount extends Component {
 	updateSignature(event) {
 		event.preventDefault();
 		
+		/**********************************************************
+		** NOTES FROM ERIK
+		**
+		** TO BE IMPLEMENTED:
+		**		- check that file size is less than 1 MB
+		**		- check that file extention is jpeg/png/jpg
+		**		  (possibly more, like GIF, TIFF, BMP, etc.)
+		**		- test to see if above image formats convert easily
+		**		  into jpeg
+		**		- Catch errros - may need to change XMLHttpRequest
+		**		  to a more React-friendly (see: axios) form
+		***********************************************************
+		*/
 		
 		var e = event.target.signature
 		var file = e.files[0]
 		
-		 console.log("File name: " + file.name)
+		console.log("File name: " + file.name)
 		console.log("File size: " + file.size)
 		console.log("Binary content: " + file.type)
 		
-		// var builder = new BlobBuilder()
-		// builder.append("img", file)
-		// var formdata = new FormData()
-		// formdata.append("name", "signature")
-		// formdata.append("img", file)
-		
-		var blob = new Blob([ file ], { type: "image/png" });
+		// Save image file as BLOB
+		var blob = new Blob([ file ], { type: "image/jpeg" });
 		
 		// send via XHR 
 		var xhr = new XMLHttpRequest()
@@ -115,56 +123,7 @@ class EditAccount extends Component {
 		xhr.open("PATCH", "/accounts", true)
 		xhr.send(blob);
 
-		// var signature = new FormData()
-		// var imagefile = document.querySelector('#signature')
-		// signature.append("img", imagefile.files[0])
 		
-		// console.log(signature.get("img"))
-		
-		// console.log(event.target.signature.value)
-		// var reader = new FileReader()
-		// // var signature = new 
-		// reader.readAsDataURL(event.target.signature.files[0])
-	   // reader.onload = function () {
-		   // // var signature = new Blob(reader.result, {type: "image/png"})
-			// return reader.result
-	   // };
-	   // reader.onerror = function (error) {
-		   // // var signature = error
-			// return error
-	   // };
-		
-			// var file = req.files.file;
-			// var path = file.path;
-			// var fsiz = file.size;
-			// var buffer = new Buffer(fsiz);
-
-			// fs.readFile(path, function (err, data) {
-				// console.log(err);
-				// console.log(data);
-			// });
-			
-			// console.log(event.target.signature)
-			
-		  // console.log(signature)
-		  // axios.patch('/accounts',
-			// {
-				// signature
-			// },
-			// {	
-				// headers: {
-					// 'Content-Type': 'multipart/form-data'
-				// }
-			// })
-			// .then((response) => {
-			  // if (response.data.userDetails) {
-				// this.props.changePage({ target: { name: 'view' } });
-			  // } else if (response.data.errors) {
-				// this.setState({
-				  // errors: [ response.data.errors ]
-				// });
-			  // }
-			// })
     }
 
  
@@ -192,7 +151,7 @@ class EditAccount extends Component {
                 <input className="form-control" type="text" id="name" name="name" />
               </div>
               <div className="row">
-                <button className="btn btn-primary" type='submit'>Update Name</button>
+                <button className="btn btn-primary spacer-bottom" type='submit'>Update Name</button>
               </div>
             </form>
 			<form onSubmit={this.updateSignature} encType="multipart/form-data" type="files">
