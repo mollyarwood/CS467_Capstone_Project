@@ -1,29 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import DropzoneComponent from 'react-dropzone-component';
-
 var ReactDOMServer = require('react-dom/server');
-
-var componentConfig = {
-    iconFiletypes: ['.jpg', '.png', '.gif'],
-    showFiletypeIcon: false,
-    postUrl: 'no-url',
-
-};
-
-var djsConfig = {
-  previewsContainer: document.querySelector('#sigPreview'),
-  maxFiles: 1,
-  autoProcessQueue: false,
-  previewTemplate: ReactDOMServer.renderToStaticMarkup(
-    <div className="">
-      <div className="">
-        <img data-dz-thumbnail="true" />
-      </div>
-    </div>
-  )
-}
-var eventHandlers = { addedfile: (file) => console.log(file) }
 
 class FirstTimeLogin extends Component {
   constructor(props) {
@@ -31,11 +9,13 @@ class FirstTimeLogin extends Component {
 
     this.state = {
       errors: [],
+      signitureFile: null,
       preview: null
     };
 
     this.validateForm = this.validateForm.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
+    this.getSignitureUploadConfig = this.getSignitureUploadConfig.bind(this);
   }
 
   validateForm(event) {
@@ -70,11 +50,39 @@ class FirstTimeLogin extends Component {
   submit(event) {
     const name = event.target.name.value;
     const password = event.target.newPassword.value;
-    const signiture = "";
-    axios.patch(`/accounts`, { name, password })
+    const signiture = new Blob([ this.state.signitureFile ], { type: "image/jpeg" });
+
+      axios.patch(`/accounts`, { name, password }).then(() =>
+      axios.patch('/accounts', signiture, {headers: { 'content-type': 'image/jpeg' }})
       .then((response) => {
         this.props.onSubmit({userType: this.props.userType});
-      })
+      }));
+
+  }
+  getSignitureUploadConfig() {
+    return {
+      componentConfig: {
+          iconFiletypes: ['.jpg', '.png', '.gif'],
+          showFiletypeIcon: false,
+          postUrl: 'no-url',
+      },
+      djsConfig: {
+        previewsContainer: document.querySelector('#sigPreview'),
+        maxFiles: 1,
+        maxFilesize: 1,
+        autoProcessQueue: false,
+        previewTemplate: ReactDOMServer.renderToStaticMarkup(
+          <div className="">
+            <div className="">
+              <img data-dz-thumbnail="true" />
+            </div>
+          </div>
+        )
+      },
+      eventHandlers: {
+        addedfile: (file) => { this.setState({ signitureFile: file }) }
+      }
+    };
   }
 
   renderErrors() {
@@ -106,22 +114,24 @@ class FirstTimeLogin extends Component {
             <label htmlFor="nameame" className="col-form-label">Preferred Name</label>
             <input className="form-control" type="text" id="name" name="name" />
           </div>
+
           <div className="signiture-upload form-group row">
             Upload an Image of Your Signature
             <DropzoneComponent
-              config={componentConfig}
-              eventHandlers={eventHandlers}
-              djsConfig={djsConfig}
-            ><div className="dz-message">Click or drag and drop file here</div></DropzoneComponent>
+              config={this.getSignitureUploadConfig().componentConfig}
+              eventHandlers={this.getSignitureUploadConfig().eventHandlers}
+              djsConfig={this.getSignitureUploadConfig().djsConfig}
+            >
+              <div className="dz-message">Click or drag and drop file here</div>
+          </DropzoneComponent>
             <div id="sigPreview" className="dropzone-previews"></div>
           </div>
+
           <div className="row spacer">
             <button className="btn btn-primary center-block" type='submit'>Submit</button>
           </div>
         </form>
       </div>
-
-
     );
   }
 }

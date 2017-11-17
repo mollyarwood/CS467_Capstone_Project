@@ -87,10 +87,10 @@ class EditAccount extends Component {
 		  })
 	  }
   }
-  
+
 	updateSignature(event) {
 		event.preventDefault();
-		
+
 		/**********************************************************
 		** NOTES FROM ERIK
 		**
@@ -104,29 +104,21 @@ class EditAccount extends Component {
 		**		  to a more React-friendly (see: axios) form
 		***********************************************************
 		*/
-		
+
 		var e = event.target.signature
 		var file = e.files[0]
-		
+
 		console.log("File name: " + file.name)
 		console.log("File size: " + file.size)
 		console.log("Binary content: " + file.type)
-		
+
 		// Save image file as BLOB
 		var blob = new Blob([ file ], { type: "image/jpeg" });
-		
-		// send via XHR 
-		var xhr = new XMLHttpRequest()
-		xhr.onload = function() {
-			console.log("Upload complete.")
-		};
-		xhr.open("PATCH", "/accounts", true)
-		xhr.send(blob);
+    axios.patch('/accounts', blob, {headers: { 'content-type': 'image/jpeg' }});
 
-		
-    }
+  }
 
- 
+
   render() {
     return (
       <div>
