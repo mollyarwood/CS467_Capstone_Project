@@ -8,6 +8,7 @@ import binascii
 import logging
 import datetime
 import urllib
+import re
 from cStringIO import StringIO
 from time import mktime
 from google.appengine.api import mail
@@ -16,6 +17,8 @@ from reportlab.lib.units import inch, cm
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib.utils import ImageReader
+import io
 
 
 #generate random string for the session
@@ -26,10 +29,6 @@ config['webapp2_extras.sessions'] = {
     'secret_key': key,
 }
 
-# THIS ALLOWS FOR PATCH REQUESTS
-allowed_methods = webapp2.WSGIApplication.allowed_methods
-new_allowed_methods = allowed_methods.union(('PATCH',))
-webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 #extending the json class to handle datetime
 class MyEncoder(json.JSONEncoder):
@@ -63,6 +62,13 @@ class AuthHandler(session_handler.BaseHandler):
         username_entered = str(post_data['username'])
         password_entered = str(post_data['password'])
         userFound = False
+
+        #check username is an email address
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", username_entered):
+            return self.response.write(json.dumps({
+               "errors": "invalid login - not email address"
+            }))
+
 
         account_creation_date = ''
         account_last_modified = ''
@@ -118,28 +124,50 @@ class AccountHandler(session_handler.BaseHandler):
         self.response.write(response)
 
     def delete(self):
+        id = self.request.GET['id']
         ah = create_entities.AccountHandler()
-        response = create_entities.AccountHandler.delete(ah, yaml.safe_load(self.request.body))
-        self.response.write(response)
-
+        response = create_entities.AccountHandler.delete(ah, id)
+        self.response.write(response)		
+		
     def patch(self):
-        body = yaml.safe_load(self.request.body)
-        logging.info(body)
 
-        # IF PASSWORD IS SENT, CONFIRM CURRENT PASSWORD IS CORRECT
-        if "currentPassword" in body:
-            account = create_entities.Account.query(create_entities.Account.username == self.session.get('user')).get()
-            if body["currentPassword"] != account.password:
-                self.response.write(json.dumps({"errors": "Current password is incorrect"}))
-                return
+        # CHECK HEADER IF CONTENT TYPE IS FORMDATA
+        # IF YES, THIS IS A FILE BYTESTREAM, WHICH MUST
+        # BE HANDLED DIFFERENTLY
+        header = self.request.headers
+        logging.info(header)
+        
+        if header['Content_Type'] == 'image/jpeg':
+            
+            # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
+            body = dict()
+            body['blob'] = self.request.body
+            body['id'] = self.session.get('id')
+            ah = create_entities.AccountHandler()
+            response = create_entities.AccountHandler.patch(ah, body)
+            logging.info(response)
+            self.response.write(json.dumps({ "userDetails": response }))
+            
+            # self.response.write(json.dumps({ "userDetails": "response" }))
+        
+        else: 
 
-        # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
-        body['id'] = self.session.get('id')
-        ah = create_entities.AccountHandler()
-        response = create_entities.AccountHandler.patch(ah, body)
-        logging.info(response)
-        self.response.write(json.dumps({ "userDetails": response }))
+            # IF PASSWORD IS SENT, CONFIRM CURRENT PASSWORD IS CORRECT
+            body = yaml.safe_load(self.request.body)
+            logging.info(body)
+            if "currentPassword" in body:
+                account = create_entities.Account.query(create_entities.Account.username == self.session.get('user')).get()
+                if body["currentPassword"] != account.password:
+                    self.response.write(json.dumps({"errors": "Current password is incorrect"}))
+                    return
 
+            # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
+            body['id'] = self.session.get('id')
+            ah = create_entities.AccountHandler()
+            response = create_entities.AccountHandler.patch(ah, body)
+            logging.info(response)
+            self.response.write(json.dumps({ "userDetails": response }))
+        
 
 
 class SendAwardHandler(session_handler.BaseHandler):
@@ -147,37 +175,46 @@ class SendAwardHandler(session_handler.BaseHandler):
     def post(self):
         # PARSE DATA FROM REQUEST
         body = yaml.safe_load(self.request.body)
-        body["sender"] = self.session.get("user")
+        body["sender"] = self.session.get('user')
         sender = body["sender"]
+        # logging.info(sender)
         recipient_name = body["recipient_name"]
         recipient_email = body["recipient_email"]
         award_type = body["award_type"]
-        logging.info(body)
 
+        # logging.info(body)
+	
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
         response = create_entities.AwardHandler.post(ah, body)
-
-
-
+		
+        # GET SIGNATURE AND CONVERT IT FROM BLOB TO BYTEBUFFER
+        id = self.session.get("id")
+        account = create_entities.Account.query(create_entities.Account.id == id).get()
+        signature = account.signature
+        
+        
+        # LOAD THE JPG DIRECTLY, TO SEE IF THE BLOB IS INVALID
+        # img = canvas.ImageReader(StringIO(open('img.jpg', 'rb').read()))
+        img = canvas.ImageReader(StringIO(signature))
+		
         # CREATE PDF BYTESTREAM
         pdfFile = StringIO()
-
         c = canvas.Canvas(pdfFile)
         c.translate(inch, inch)
         c.setFont("Times-Bold", 40)
         c.setPageSize(landscape(letter))
         c.drawCentredString(9*inch/2.0, 6*inch, "CONGRATULATIONS!")
-        # s = String(5.5*inch,7*inch,"CONGRATULATIONS!")
-        # s.textAnchor = middle
-        # c.drawString(s)
+
         c.line(.5*inch,5.2*inch,8.5*inch,5.2*inch)
         c.setFont("Times-Roman", 18)
         c.drawCentredString(9*inch/2.0, 4*inch, "THE CORPORATION PROUDLY PRESENTS THE AWARD OF")
-        if award_type == "employee_of_the_week":
+
+        if award_type == "employeeOfWeek":
             award_type_msg = "EMPLOYEE OF THE WEEK"
-        elif award_type == "employee_of_the_month":
+        elif award_type == "employeeOfMonth":
             award_type_msg = "EMPLOYEE OF THE MONTH"
+            
         c.setFont("Times-Bold", 26)
         c.drawCentredString(9*inch/2.0, 3.5*inch, award_type_msg)
         c.setFont("Times-Roman", 18)
@@ -193,8 +230,8 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.drawString(3.5*inch, 0*inch, "EMPLOYER NAME")
         c.line(7*inch,.2*inch,9*inch,.2*inch)
         c.drawString(7*inch, 0*inch, "SIGNATURE")
-        c.drawImage('signature.jpg', 7*inch, .3*inch, 1.5*inch, 1.5*inch)
-
+        c.drawImage(img, 7*inch, .3*inch, 1.5*inch, 1.5*inch)
+        
         c.setFont("Times-Roman", 18)
         c.drawString(3.5*inch, .3*inch, sender)
         c.save()
@@ -202,15 +239,15 @@ class SendAwardHandler(session_handler.BaseHandler):
 
         # SEND EMAIL
         filename = 'Award.pdf'
-        mail.send_mail(sender="donotrespond@cs467capstone.appspotmail.com",
+        mail.send_mail(sender="anything@cs467capstone.appspotmail.com",
         to=recipient_email,
         subject="Congratulations " + recipient_name + "! You received an award!",
         body="See attachment.",
         attachments=[(filename, pdfFile.getvalue())])
-
+		
 		# WRITE RESPONSE
         self.response.write(json.dumps({"award": response}))
-
+ 
 
 class ApiAwardHandler(webapp2.RequestHandler):
     def post(self):
@@ -231,7 +268,7 @@ class ApiAwardHandler(webapp2.RequestHandler):
 
 class ApiAwardCollectionHandler(webapp2.RequestHandler):
     def get(self):
-        name = self.request.GET['name']
+        # name = self.request.GET('name')
         ah = create_entities.AwardCollectionHandler()
         response = create_entities.AwardCollectionHandler.get(ah)
         self.response.write(response)
@@ -269,15 +306,6 @@ class ApiAccountCollectionHandler(session_handler.BaseHandler):
 
 
 
-#class PassHandler(session_handler.BaseHandler):
-
-#   def post(self):
-#        ah = create_entities.RecoverHandler()
-#        response['form'] = create_entities.RecoverHandler.post()
-        #self.response.write(response)
-#        self.response.write("hi there")
-
-
 # [START app]
 
 allowed_methods = webapp2.WSGIApplication.allowed_methods
@@ -288,7 +316,7 @@ app = webapp2.WSGIApplication([
     ('/auth', AuthHandler),
     ('/logout', LogoutHandler),
     ('/accounts', AccountHandler),
-    ('/accounts/(.*)', create_entities.AccountHandler),
+    ('/accounts/(.*)', AccountHandler),
     ('/recover', create_entities.RecoverHandler),
     ('/sendAward', SendAwardHandler),
     ('/api/award/(.*)', ApiAwardHandler),
@@ -298,3 +326,4 @@ app = webapp2.WSGIApplication([
     ('/query', create_entities.QueryHandler)
 ], config=config, debug=True)
 # [END app]
+

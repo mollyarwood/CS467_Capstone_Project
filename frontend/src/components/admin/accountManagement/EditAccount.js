@@ -17,10 +17,12 @@ class EditAccount extends Component {
     event.preventDefault();
       const username = event.target.username.value;
       const password = event.target.password.value;
-      axios.post('/accounts',
+      const name = event.target.Name.value;
+      axios.patch('/accounts',
         {
           username,
           password,
+          name,
           userType: _.lowerCase(this.props.accountType)
         })
         .then((response) => {
@@ -60,8 +62,8 @@ class EditAccount extends Component {
               <input className="form-control" type="text" name="username" />
             </div>
             <div className="form-group row">
-              <label htmlFor="name" className="col-form-label">Name:</label>
-              <input className="form-control" type="text" name="name" />
+              <label htmlFor="Name" className="col-form-label">Name:</label>
+              <input className="form-control" type="text" name="Name" />
             </div>
             <div className="form-group row">
               <label htmlFor="password" className="col-form-label">Password:</label>

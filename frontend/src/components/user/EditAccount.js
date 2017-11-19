@@ -9,6 +9,7 @@ class EditAccount extends Component {
       this.updateUsername = this.updateUsername.bind(this);
       this.updateName = this.updateName.bind(this);
       this.updatePassword = this.updatePassword.bind(this);
+	  this.updateSignature = this.updateSignature.bind(this);
 
       this.state = {
         errors: []
@@ -86,6 +87,44 @@ class EditAccount extends Component {
 		  })
 	  }
   }
+  
+	updateSignature(event) {
+		event.preventDefault();
+		
+		/**********************************************************
+		** NOTES FROM ERIK
+		**
+		** TO BE IMPLEMENTED:
+		**		- check that file size is less than 1 MB
+		**		- check that file extention is jpeg/png/jpg
+		**		  (possibly more, like GIF, TIFF, BMP, etc.)
+		**		- test to see if above image formats convert easily
+		**		  into jpeg
+		**		- Catch errros - may need to change XMLHttpRequest
+		**		  to a more React-friendly (see: axios) form
+		***********************************************************
+		*/
+		
+		var e = event.target.signature
+		var file = e.files[0]
+		
+		console.log("File name: " + file.name)
+		console.log("File size: " + file.size)
+		console.log("Binary content: " + file.type)
+		
+		// Save image file as BLOB
+		var blob = new Blob([ file ], { type: "image/jpeg" });
+		
+		// send via XHR 
+		var xhr = new XMLHttpRequest()
+		xhr.onload = function() {
+			console.log("Upload complete.")
+		};
+		xhr.open("PATCH", "/accounts", true)
+		xhr.send(blob);
+
+		
+    }
 
  
   render() {
@@ -112,9 +151,18 @@ class EditAccount extends Component {
                 <input className="form-control" type="text" id="name" name="name" />
               </div>
               <div className="row">
-                <button className="btn btn-primary" type='submit'>Update Name</button>
+                <button className="btn btn-primary spacer-bottom" type='submit'>Update Name</button>
               </div>
             </form>
+			<form onSubmit={this.updateSignature} encType="multipart/form-data" type="files">
+				<div className="form-group row">
+					<label htmlFor="signature" className="col-form-label">Signature</label>
+					<input className="form-control" type="file" id="signature" name="signature" />
+				</div>
+				<div className="row">
+					<button className="btn btn-primary spacer-bottom" type='submit'>Update Signature</button>
+				</div>
+			</form>
           </div>
           <div className="col-md-3 col-md-offset-2">
             <form onSubmit={this.updatePassword}>

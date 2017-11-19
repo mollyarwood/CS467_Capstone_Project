@@ -6,9 +6,11 @@ import Recover from './Recover';
 class Login extends Component {
   constructor(props) {
     super(props);
+
     this.renderErrors = this.renderErrors.bind(this);
     this.logIn = this.logIn.bind(this);
     this.changePage = this.changePage.bind(this);
+    this.isInputValid = this.isInputValid.bind(this);
 
     this.state = {
       currentPage: 'login',
@@ -23,27 +25,50 @@ class Login extends Component {
     });
   }
 
-  logIn(event) {
-    event.preventDefault();
+  isInputValid(event) {
+    const newErrors = [];
+
     const username = event.target.username.value;
     const password = event.target.password.value;
-    axios.post('/auth', { username, password })
-      .then((response) => {
-        if (response.data.loggedIn &&
-          response.data.creation_date === response.data.last_modified) {
-          this.setState({
-            currentPage: 'firstTime',
-            accountId: response.data.id,
-            userType: response.data.userType
-          });
-        } else if (response.data.loggedIn) {
-          this.props.setLoggedIn(response.data);
-        } else {
-          this.setState({
-            errors: [ response.data.errors ]
-          });
-        }
-      })
+
+    if (username.length === 0) {
+      newErrors.push('Username cannot be blank');
+    }
+    if (!username.match(/[^@]+@[^@]+\.[^@]+/)) {
+      newErrors.push('Username must be an email');
+    }
+    if (password.length === 0) {
+      newErrors.push('Password cannot be blank');
+    }
+
+    this.setState({ errors: newErrors });
+
+    return newErrors.length > 0 ? false : true;
+  }
+
+  logIn(event) {
+    event.preventDefault();
+    if (this.isInputValid(event)) {
+      const username = event.target.username.value;
+      const password = event.target.password.value;
+      axios.post('/auth', { username, password })
+        .then((response) => {
+          if (response.data.loggedIn &&
+            response.data.creation_date === response.data.last_modified) {
+            this.setState({
+              currentPage: 'firstTime',
+              accountId: response.data.id,
+              userType: response.data.userType
+            });
+          } else if (response.data.loggedIn) {
+            this.props.setLoggedIn(response.data);
+          } else {
+            this.setState({
+              errors: [ response.data.errors ]
+            });
+          }
+        })
+      }
   }
 
   renderErrors() {

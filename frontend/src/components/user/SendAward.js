@@ -68,13 +68,13 @@ class SendAward extends Component {
             <label htmlFor="awardType" className="col-form-label">Award Type:</label>
             <div className="form-check" name="awardType">
               <label className="form-check-label">
-                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios1" value="employee_of_the_week" />
+                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios1" value="employeeOfWeek" />
                   Employee of the Week
               </label>
             </div>
             <div className="form-check">
               <label className="form-check-label">
-                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios2" value="employee_of_the_month" />
+                <input className="form-check-input" type="radio" name="awardType" id="exampleRadios2" value="employeeOfMonth" />
                   Employee of the Month
               </label>
             </div>
