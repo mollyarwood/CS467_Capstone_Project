@@ -248,7 +248,7 @@ class SendAwardHandler(session_handler.BaseHandler):
 
         # SEND EMAIL
         filename = 'Award.pdf'
-        mail.send_mail(sender="employeeAward@plucky-paratext-180616.appspotmail.com",
+        mail.send_mail(sender="employeeAward@cs467capstone.appspotmail.com",
         to=recipient_email,
         subject="Congratulations ", #+ recipient_name + "! You received an award!",
         body="See attachment.",
