@@ -30,12 +30,12 @@ class SendAward extends Component {
   sendAward(event) {
     event.preventDefault();
      // const user_name = 'test user name';
-      const recipient_name = event.target.username.value;
+      const recipient_username = event.target.username.value;
       const recipient_email = event.target.recipient_email.value;
 	  const award_type = event.target.awardType.value;
       axios.post('/sendAward',
         {
-          recipient_name,
+          recipient_username,
           recipient_email,
 		  award_type
         }).then((response) => {
