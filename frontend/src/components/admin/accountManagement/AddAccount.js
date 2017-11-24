@@ -8,14 +8,37 @@ class AddAccount extends Component {
 
     this.createAccount = this.createAccount.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
-
+    this.isInputValid = this.isInputValid.bind(this);
+    
     this.state = {
       errors: []
     }
   }
 
+  isInputValid(event) {
+    const newErrors = [];
+
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
+    if (username.length === 0) {
+      newErrors.push('Username cannot be blank');
+    }
+    if (!username.match(/[^@]+@[^@]+\.[^@]+/)) {
+      newErrors.push('Username must be an email');
+    }
+    if (password.length === 0) {
+      newErrors.push('Password cannot be blank');
+    }
+
+    this.setState({ errors: newErrors });
+
+    return newErrors.length > 0 ? false : true;
+  }
+
   createAccount(event) {
     event.preventDefault();
+    if (this.isInputValid(event)) {
       const username = event.target.username.value;
       const password = event.target.password.value;
       axios.post('/accounts',
@@ -33,6 +56,7 @@ class AddAccount extends Component {
             });
           }
         })
+    }
   }
 
   renderErrors() {
