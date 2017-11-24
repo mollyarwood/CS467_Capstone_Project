@@ -53,8 +53,9 @@ class SendAward extends Component {
   changeSelectedUser(event) {
     const selectedId = event.target.options[ event.target.selectedIndex ].id;
     const account = _.find(this.state.accounts, account => account.id === selectedId);
+    const selectedUserEmail = account ? account.username : "";
 
-    this.setState({ selectedUserEmail: account.username });
+    this.setState({ selectedUserEmail });
   }
 
  renderErrors() {
