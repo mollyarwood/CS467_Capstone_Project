@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 
 class ViewAwards extends Component {
   constructor(props) {
@@ -9,43 +10,27 @@ class ViewAwards extends Component {
       }
 
       this.renderAwards = this.renderAwards.bind(this);
-      this.deleteAward = this.deleteAward.bind(this);
   }
 
   componentWillMount() {
-    axios.get(`/api/awards?name=${this.props.name}`).then((response) => {
-      if (response.data.awards) {
+    axios.get(`/api/awards`).then((response) => {
+      if (response.data) {
+        const usersRecievedAwards = _.filter(response.data, award =>
+          award.recipient_email === this.props.username);
         this.setState({
-          awardsRecieved: response.data.awards
+          awardsRecieved: usersRecievedAwards
         });
       }
     });
   }
 
-  deleteAward(event) {
-    const awardId = parseInt(event.target.id, 10);
-
-    axios.delete('/ROUTE-HERE').then((response) => {
-      const newAwardsList = this.state.awardsRecieved
-        .filter(award => award.id !== awardId);
-      this.setState({
-        awardsRecieved: newAwardsList
-      });
-    });
-  }
-
   renderAwards() {
     if (this.state.awardsRecieved.length > 0) {
-      return (this.state.awardsRecieved.map( award =>
+      return (this.state.awardsRecieved.map(award =>
         <tr className="row" key={award.id}>
-          <td className="col-md-4">{award.name}</td>
-          <td className="col-md-3">{award.date}</td>
-          <td className="col-md-4">{award.givenBy}</td>
-          <td className="col-md-1">
-            <button id={award.id} className="btn btn-danger" onClick={this.deleteAward}>
-              DELETE
-            </button>
-          </td>
+          <td className="col-md-4">{_.startCase(award.award_type)}</td>
+          <td className="col-md-4">{moment(award.date_sent).format('MM/DD/YYYY')}</td>
+          <td className="col-md-4">{award.sender}</td>
         </tr>))
     } else {
       return (
@@ -65,9 +50,8 @@ class ViewAwards extends Component {
           <thead>
             <tr className="row">
               <th className="col-md-4">Award</th>
-              <th className="col-md-3">Date</th>
-              <th className="col-md-4">Given by</th>
-              <th className="col-md-1">Actions</th>
+              <th className="col-md-4">Date Sent</th>
+              <th className="col-md-4">Given By</th>
 
             </tr>
           </thead>

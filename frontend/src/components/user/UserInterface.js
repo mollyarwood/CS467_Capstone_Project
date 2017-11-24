@@ -25,13 +25,13 @@ class UserInterface extends Component {
   renderCurrentPageContent() {
     switch(this.state.currentPage) {
       case 'ViewAwards':
-        return <ViewAwards />;
+        return <ViewAwards username={this.props.username} />;
       case 'SendAward':
         return <SendAward changePage={this.changePage} />;
       case 'EditAccount':
         return <EditAccount changePage={this.changePage} />;
       default:
-        return <ViewAwards name={this.props.name} />;
+        return <ViewAwards username={this.props.username} />;
     }
   }
 

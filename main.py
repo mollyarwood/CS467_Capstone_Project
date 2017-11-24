@@ -52,6 +52,7 @@ class AuthHandler(session_handler.BaseHandler):
             self.response.write(json.dumps({
                 "loggedIn": True,
                 "name": self.session.get('name'),
+                "username": self.session.get('user'),
                 "userType": self.session.get('userType')
             }))
 
@@ -74,6 +75,7 @@ class AuthHandler(session_handler.BaseHandler):
         account_last_modified = ''
         account_id = ''
         name = ''
+        username = ''
 
         for entity in create_entities.Account.query():
             # logging.info(entity)
@@ -88,6 +90,7 @@ class AuthHandler(session_handler.BaseHandler):
                     account_creation_date = entity.creation_date.strftime("%m/%d/%Y %H:%M:%S")
                     account_last_modified = entity.last_modified.strftime("%m/%d/%Y %H:%M:%S")
                     name = entity.name
+                    username = entity.username
                     userFound = True
 
         if userFound:
@@ -95,6 +98,7 @@ class AuthHandler(session_handler.BaseHandler):
                 "loggedIn": True,
                 "id": account_id,
                 "name": name,
+                "username": username,
                 "userType": self.session['userType'],
                 "creation_date": account_creation_date,
                 "last_modified": account_last_modified
@@ -277,10 +281,9 @@ class ApiAwardHandler(webapp2.RequestHandler):
 
 class ApiAwardCollectionHandler(webapp2.RequestHandler):
     def get(self):
-        # name = self.request.GET('name')
         ah = create_entities.AwardCollectionHandler()
         response = create_entities.AwardCollectionHandler.get(ah)
-        self.response.write(response)
+        self.response.write(json.dumps(response))
 
 
 
