@@ -127,8 +127,8 @@ class AccountHandler(session_handler.BaseHandler):
         id = self.request.GET['id']
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.delete(ah, id)
-        self.response.write(response)		
-		
+        self.response.write(response)
+
     def patch(self):
 
         # CHECK HEADER IF CONTENT TYPE IS FORMDATA
@@ -136,9 +136,9 @@ class AccountHandler(session_handler.BaseHandler):
         # BE HANDLED DIFFERENTLY
         header = self.request.headers
         logging.info(header)
-        
+
         if header['Content_Type'] == 'image/jpeg':
-            
+
             # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
             body = dict()
             body['blob'] = self.request.body
@@ -147,10 +147,10 @@ class AccountHandler(session_handler.BaseHandler):
             response = create_entities.AccountHandler.patch(ah, body)
             logging.info(response)
             self.response.write(json.dumps({ "userDetails": response }))
-            
+
             # self.response.write(json.dumps({ "userDetails": "response" }))
-        
-        else: 
+
+        else:
 
             # IF PASSWORD IS SENT, CONFIRM CURRENT PASSWORD IS CORRECT
             body = yaml.safe_load(self.request.body)
@@ -167,7 +167,7 @@ class AccountHandler(session_handler.BaseHandler):
             response = create_entities.AccountHandler.patch(ah, body)
             logging.info(response)
             self.response.write(json.dumps({ "userDetails": response }))
-        
+
 
 
 class SendAwardHandler(session_handler.BaseHandler):
@@ -178,34 +178,34 @@ class SendAwardHandler(session_handler.BaseHandler):
         body["sender"] = self.session.get('user')
         sender = body["sender"]
         # logging.info(sender)
-        
+
         # GET RECIPIENT'S NAME
         account = create_entities.Account.query(create_entities.Account.username == body["recipient_username"]).get()
         recipient_name = account.name
         body["recipient_name"] = recipient_name
-        
+
         logging.info(recipient_name)
-        
+
         recipient_email = body["recipient_email"]
         award_type = body["award_type"]
         sender_name = self.session.get('name')
         date = datetime.date.today().strftime("%B %d, %Y")
 
-	
+
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
         response = create_entities.AwardHandler.post(ah, body)
-		
+
         # GET SIGNATURE AND CONVERT IT FROM BLOB TO BYTEBUFFER
         id = self.session.get("id")
         account = create_entities.Account.query(create_entities.Account.id == id).get()
         signature = account.signature
-        
-        
+
+
         # LOAD THE JPG DIRECTLY, TO SEE IF THE BLOB IS INVALID
         # img = canvas.ImageReader(StringIO(open('img.jpg', 'rb').read()))
         img = canvas.ImageReader(StringIO(signature))
-		
+
         # CREATE PDF BYTESTREAM
         pdfFile = StringIO()
         c = canvas.Canvas(pdfFile)
@@ -222,7 +222,7 @@ class SendAwardHandler(session_handler.BaseHandler):
             award_type_msg = "EMPLOYEE OF THE WEEK"
         elif award_type == "employeeOfMonth":
             award_type_msg = "EMPLOYEE OF THE MONTH"
-            
+
         c.setFont("Times-Bold", 26)
         c.drawCentredString(9*inch/2.0, 3.5*inch, award_type_msg)
         c.setFont("Times-Roman", 18)
@@ -239,7 +239,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.line(7*inch,.2*inch,9*inch,.2*inch)
         c.drawString(7*inch, 0*inch, "SIGNATURE")
         c.drawImage(img, 7*inch, .3*inch, 1.5*inch, 1.5*inch)
-        
+
         c.setFont("Times-Roman", 18)
         c.drawString(3.5*inch, .3*inch, sender_name)
         c.drawString(0*inch, .3*inch, date)
@@ -253,10 +253,10 @@ class SendAwardHandler(session_handler.BaseHandler):
         subject="Congratulations ", #+ recipient_name + "! You received an award!",
         body="See attachment.",
         attachments=[(filename, pdfFile.getvalue())])
-		
+
 		# WRITE RESPONSE
         self.response.write(json.dumps({"award": response}))
- 
+
 
 class ApiAwardHandler(webapp2.RequestHandler):
     def post(self):
@@ -335,4 +335,3 @@ app = webapp2.WSGIApplication([
     ('/query', create_entities.QueryHandler)
 ], config=config, debug=True)
 # [END app]
-
