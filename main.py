@@ -178,11 +178,19 @@ class SendAwardHandler(session_handler.BaseHandler):
         body["sender"] = self.session.get('user')
         sender = body["sender"]
         # logging.info(sender)
-        recipient_name = body["recipient_name"]
+
+        # GET RECIPIENT'S NAME
+        account = create_entities.Account.query(create_entities.Account.username == body["recipient_username"]).get()
+        recipient_name = account.name
+        body["recipient_name"] = recipient_name
+
+        logging.info(recipient_name)
+
         recipient_email = body["recipient_email"]
         award_type = body["award_type"]
+        sender_name = self.session.get('name')
+        date = datetime.date.today().strftime("%B %d, %Y")
 
-        # logging.info(body)
 
         # SAVE AWARD IN DB
         ah = create_entities.AwardHandler()
@@ -220,7 +228,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.setFont("Times-Roman", 18)
         c.drawCentredString(9*inch/2.0, 2.5*inch, "TO THE MOST HONORABLE")
         c.setFont("Times-Bold", 26)
-        c.drawCentredString(9*inch/2.0, 2*inch, recipient_name)
+        # c.drawCentredString(9*inch/2.0, 2*inch, recipient_name)
 
 
         c.setFont("Times-Roman", 12)
@@ -233,15 +241,16 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.drawImage(img, 7*inch, .3*inch, 1.5*inch, 1.5*inch)
 
         c.setFont("Times-Roman", 18)
-        c.drawString(3.5*inch, .3*inch, sender)
+        c.drawString(3.5*inch, .3*inch, sender_name)
+        c.drawString(0*inch, .3*inch, date)
         c.save()
 
 
         # SEND EMAIL
         filename = 'Award.pdf'
-        mail.send_mail(sender="anything@cs467capstone.appspotmail.com",
+        mail.send_mail(sender="employeeAward@cs467capstone.appspotmail.com",
         to=recipient_email,
-        subject="Congratulations " + recipient_name + "! You received an award!",
+        subject="Congratulations ", #+ recipient_name + "! You received an award!",
         body="See attachment.",
         attachments=[(filename, pdfFile.getvalue())])
 

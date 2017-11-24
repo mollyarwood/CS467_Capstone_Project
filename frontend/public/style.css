@@ -96,3 +96,11 @@ div.filepicker {
 .center {
   text-align: center;
 }
+
+.right {
+  text-align: right;
+}
+
+.bold-text {
+  font-weight: bold;
+}

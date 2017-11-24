@@ -102,8 +102,7 @@ class EditAccount extends Component {
 		**		  into jpeg
 		**		- Catch errros - may need to change XMLHttpRequest
 		**		  to a more React-friendly (see: axios) form
-		***********************************************************
-		*/
+		***********************************************************/
 
 		var e = event.target.signature
 		var file = e.files[0]
@@ -111,6 +110,22 @@ class EditAccount extends Component {
 		console.log("File name: " + file.name)
 		console.log("File size: " + file.size)
 		console.log("Binary content: " + file.type)
+
+		if (file.size >= 900000) {
+			this.setState({
+				errors: [ "File size too large (must be smaller than 1 MB)."]
+			})
+			return
+		}
+
+		var extension = file.name.split('.').pop()
+		console.log("Extension: " + extension)
+		if (extension != "jpg" && extension != "jpeg") {
+			this.setState({
+				errors: [ "File type must be jpeg or jpg."]
+			})
+			return
+		}
 
 		// Save image file as BLOB
 		var blob = new Blob([ file ], { type: "image/jpeg" });
