@@ -8,13 +8,15 @@ class SendAward extends Component {
 
     this.sendAward = this.sendAward.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
+    this.changeSelectedUser = this.changeSelectedUser.bind(this);
 
     this.state = {
       errors: [],
-      accounts: []
+      accounts: [],
+      selectedUserEmail: null
     }
   }
-  
+
     componentWillMount() {
     axios.get(`/accounts?type=user`)
       .then((response) => {
@@ -29,7 +31,6 @@ class SendAward extends Component {
 
   sendAward(event) {
     event.preventDefault();
-     // const user_name = 'test user name';
       const recipient_username = event.target.username.value;
       const recipient_email = event.target.recipient_email.value;
 	  const award_type = event.target.awardType.value;
@@ -47,6 +48,13 @@ class SendAward extends Component {
             });
           }
         })
+  }
+
+  changeSelectedUser(event) {
+    const selectedId = event.target.options[ event.target.selectedIndex ].id;
+    const account = _.find(this.state.accounts, account => account.id === selectedId);
+
+    this.setState({ selectedUserEmail: account.username });
   }
 
  renderErrors() {
@@ -82,14 +90,30 @@ class SendAward extends Component {
             <div className="form-group row">
               <label htmlFor="password" className="col-form-label">Recipient Name:</label>
               <div className="form-group">
-                <select className="form-control" id="username" name="username">
-                  {this.state.accounts.map((account) => <option key={account.id}>{account.username}</option>)}
+                <select
+                  className="form-control"
+                  id="username"
+                  name="username"
+                  onChange={this.changeSelectedUser}
+                  defaultValue=""
+                >
+                  <option></option>
+                  {this.state.accounts
+                    .filter(account => account.name)
+                    .map((account) => <option id={account.id} key={account.id}>{account.name}</option>)
+                  }
                 </select>
               </div>
             </div>
               <div className="form-group row">
                 <label htmlFor="recipient_email" className="col-form-label">Recipient's Email Address: </label>
-                <input className="form-control" type="text" name="recipient_email" />
+                <input
+                  className="form-control"
+                  type="text"
+                  key={this.state.selectedUserEmail}
+                  defaultValue={this.state.selectedUserEmail}
+                  name="recipient_email"
+                />
               </div>
             <div className="row">
               <button className="btn btn-primary" type='submit'>Send</button>
