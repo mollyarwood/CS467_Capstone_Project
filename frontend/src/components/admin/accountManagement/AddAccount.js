@@ -9,7 +9,7 @@ class AddAccount extends Component {
     this.createAccount = this.createAccount.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
     this.isInputValid = this.isInputValid.bind(this);
-    
+
     this.state = {
       errors: []
     }

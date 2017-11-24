@@ -9,12 +9,12 @@ import json
 import session_handler
 import datetime
 import logging
+import time
 from time import mktime
 from webapp2_extras import sessions
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
 from google.appengine.api import mail
-
 
 
 class Account(ndb.Model):
@@ -85,7 +85,7 @@ class AwardCollectionHandler(session_handler.BaseHandler):
                 "date_sent": award['date_sent'].strftime("%m/%d/%Y %H:%M:%S"),
             })
         return awards
-			
+
 
 
 
@@ -126,8 +126,9 @@ class AccountHandler(session_handler.BaseHandler):
             account_dict = {
                 "userDetails": account_dict
             }
-
-        # self.response.write(json.dumps(account_dict, cls=MyEncoder))
+        # Response was getting sent back without id because of timing,
+        # async callback would be better here
+        time.sleep(0.5)
         return json.dumps(account_dict, cls=MyEncoder)
 
 
@@ -156,7 +157,7 @@ class AccountHandler(session_handler.BaseHandler):
             # account_dict = account.to_dict()
             # account_dict = {
             # "userDetails": account_dict
-            # }  
+            # }
 
         else:
             account_dict = dict()
@@ -196,7 +197,8 @@ class AccountHandler(session_handler.BaseHandler):
                 resp = {
                     'deleted': 'False'
                 }
-            self.response.write(json.dumps(resp))
+            #self.response.write(json.dumps(resp))
+            return json.dumps(resp)
 
 
 
@@ -266,7 +268,7 @@ class AwardHandler(session_handler.BaseHandler):
                 return "Error: award ID not found"
             # self.response.write("award ID not found")
 
-            
+
 class RecoverHandler(session_handler.BaseHandler):
 
 #	def get(self):
@@ -294,7 +296,7 @@ class RecoverHandler(session_handler.BaseHandler):
 
         message.to = em
 
-        if p != None: 
+        if p != None:
             message.body = "Your password is {}".format(p)
         else:
             message.body = "Sorry, there is no user with that email in our account."
@@ -340,7 +342,7 @@ class QueryHandler(session_handler.BaseHandler):
             for index, result in enumerate(query):
                 current = query[index]
                 if index < (l - 1):
-                    nextOne = query[index + 1] 
+                    nextOne = query[index + 1]
                     if current.recipient_name == nextOne.recipient_name and current.award_type == nextOne.award_type:
                         count += 1
                     else:
@@ -363,5 +365,3 @@ class QueryHandler(session_handler.BaseHandler):
 
 
         self.response.write(json.dumps(resp))
-
-

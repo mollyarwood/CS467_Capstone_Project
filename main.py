@@ -127,8 +127,7 @@ class AccountHandler(session_handler.BaseHandler):
         response = create_entities.AccountHandler.post(ah, yaml.safe_load(self.request.body))
         self.response.write(response)
 
-    def delete(self):
-        id = self.request.GET['id']
+    def delete(self, id=None):
         ah = create_entities.AccountHandler()
         response = create_entities.AccountHandler.delete(ah, id)
         self.response.write(response)
