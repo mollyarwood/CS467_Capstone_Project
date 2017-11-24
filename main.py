@@ -132,7 +132,7 @@ class AccountHandler(session_handler.BaseHandler):
         response = create_entities.AccountHandler.delete(ah, id)
         self.response.write(response)
 
-    def patch(self):
+    def patch(self, id=None):
 
         # CHECK HEADER IF CONTENT TYPE IS FORMDATA
         # IF YES, THIS IS A FILE BYTESTREAM, WHICH MUST
@@ -145,7 +145,7 @@ class AccountHandler(session_handler.BaseHandler):
             # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
             body = dict()
             body['blob'] = self.request.body
-            body['id'] = self.session.get('id')
+            body['id'] = id or self.session.get('id')
             ah = create_entities.AccountHandler()
             response = create_entities.AccountHandler.patch(ah, body)
             logging.info(response)
@@ -165,7 +165,7 @@ class AccountHandler(session_handler.BaseHandler):
                     return
 
             # ADD ID TO BODY, WHICH WILL BE USED IN THE DB QUERY
-            body['id'] = self.session.get('id')
+            body['id'] = id or self.session.get('id')
             ah = create_entities.AccountHandler()
             response = create_entities.AccountHandler.patch(ah, body)
             logging.info(response)

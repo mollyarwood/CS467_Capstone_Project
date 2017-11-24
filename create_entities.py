@@ -164,7 +164,7 @@ class AccountHandler(session_handler.BaseHandler):
             account_dict = {
                 "errors": "ERROR"
             }
-
+        time.sleep(0.5)
         return json.dumps(account_dict, cls=MyEncoder)
 
 

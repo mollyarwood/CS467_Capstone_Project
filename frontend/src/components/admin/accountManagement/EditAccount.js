@@ -18,7 +18,7 @@ class EditAccount extends Component {
       const username = event.target.username.value;
       const password = event.target.password.value;
       const name = event.target.Name.value;
-      axios.patch('/accounts',
+      axios.patch(`/accounts/${this.props.accountInfo.id}`,
         {
           username,
           password,
@@ -47,7 +47,6 @@ class EditAccount extends Component {
 
   render() {
     const accountInfo = this.props.accountInfo;
-
     return (
       <div>
         <div>
@@ -59,15 +58,15 @@ class EditAccount extends Component {
           <form className="col-md-4 col-md-offset-4" onSubmit={this.editAccount}>
             <div className="form-group row">
               <label htmlFor="username" className="col-form-label">Username:</label>
-              <input className="form-control" type="text" name="username" />
+              <input className="form-control" type="text" name="username" defaultValue={accountInfo.username}/>
             </div>
             <div className="form-group row">
               <label htmlFor="Name" className="col-form-label">Name:</label>
-              <input className="form-control" type="text" name="Name" />
+              <input className="form-control" type="text" name="Name" defaultValue={accountInfo.name}/>
             </div>
             <div className="form-group row">
               <label htmlFor="password" className="col-form-label">Password:</label>
-              <input className="form-control" type="password" name="password" />
+              <input className="form-control" type="password" name="password" defaultValue={accountInfo.password} />
             </div>
             <div className="row">
               <button className="btn btn-primary" type='submit'>Update Account</button>
