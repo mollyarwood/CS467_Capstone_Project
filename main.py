@@ -207,7 +207,8 @@ class SendAwardHandler(session_handler.BaseHandler):
 
         # LOAD THE JPG DIRECTLY, TO SEE IF THE BLOB IS INVALID
         # img = canvas.ImageReader(StringIO(open('img.jpg', 'rb').read()))
-        img = canvas.ImageReader(StringIO(signature))
+        if signature:
+            img = canvas.ImageReader(StringIO(signature))
 
         # CREATE PDF BYTESTREAM
         pdfFile = StringIO()
@@ -231,7 +232,7 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.setFont("Times-Roman", 18)
         c.drawCentredString(9*inch/2.0, 2.5*inch, "TO THE MOST HONORABLE")
         c.setFont("Times-Bold", 26)
-        # c.drawCentredString(9*inch/2.0, 2*inch, recipient_name)
+        c.drawCentredString(9*inch/2.0, 2*inch, recipient_name)
 
 
         c.setFont("Times-Roman", 12)
@@ -241,7 +242,8 @@ class SendAwardHandler(session_handler.BaseHandler):
         c.drawString(3.5*inch, 0*inch, "EMPLOYER NAME")
         c.line(7*inch,.2*inch,9*inch,.2*inch)
         c.drawString(7*inch, 0*inch, "SIGNATURE")
-        c.drawImage(img, 7*inch, .3*inch, 1.5*inch, 1.5*inch)
+        if signature:
+            c.drawImage(img, 7*inch, .3*inch, 1.5*inch, 1.5*inch)
 
         c.setFont("Times-Roman", 18)
         c.drawString(3.5*inch, .3*inch, sender_name)
