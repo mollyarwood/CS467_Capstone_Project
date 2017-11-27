@@ -143,8 +143,8 @@ class AccountHandler(session_handler.BaseHandler):
         if account != None:
             if 'username' in account_data:
                 account.username = account_data['username']
-            if 'newPassword' in account_data:
-                account.password = account_data['newPassword']
+            if 'password' in account_data:
+                account.password = account_data['password']
             if 'name' in account_data:
                 account.name = account_data['name']
             if 'blob' in account_data:

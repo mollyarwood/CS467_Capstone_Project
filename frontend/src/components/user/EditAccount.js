@@ -63,14 +63,14 @@ class EditAccount extends Component {
 
   updatePassword(event) {
 	  event.preventDefault();
-      const newPassword = event.target.newPassword.value;
+      const password = event.target.newPassword.value;
 	  const confirmPassword = event.target.confirmPassword.value;
 	  const currentPassword = event.target.currentPassword.value;
 	  if (newPassword == confirmPassword) {
 		  axios.patch('/accounts',
 			{
 			  currentPassword,
-			  newPassword,
+			  password,
 			})
 			.then((response) => {
 			  if (response.data.userDetails) {

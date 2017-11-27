@@ -134,8 +134,8 @@ class AccountHandler(session_handler.BaseHandler):
 
     def patch(self, id=None):
 
-        # CHECK HEADER IF CONTENT TYPE IS FORMDATA
-        # IF YES, THIS IS A FILE BYTESTREAM, WHICH MUST
+        # CHECK HEADER IF CONTENT TYPE IS image/jpeg
+        # IF YES, THIS IS AN IMAGE FILE, WHICH MUST
         # BE HANDLED DIFFERENTLY
         header = self.request.headers
         logging.info(header)
