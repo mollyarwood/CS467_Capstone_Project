@@ -6,6 +6,7 @@ class SendAward extends Component {
   constructor(props) {
     super(props);
 
+	this.validateForm = this.validateForm.bind(this);
     this.sendAward = this.sendAward.bind(this);
     this.renderErrors = this.renderErrors.bind(this);
     this.changeSelectedUser = this.changeSelectedUser.bind(this);
@@ -27,6 +28,33 @@ class SendAward extends Component {
           });
         }
       });
+  }
+  
+   validateForm(event) {
+    event.preventDefault();
+    event.preventDefault();
+    const selectedId = event.target.username.options[event.target.username.selectedIndex].id;
+    const recipient_email = event.target.recipient_email.value;
+	const award_type = event.target.awardType.value;
+    const errors = [];
+
+    if (!selectedId) {
+      errors.push('Must select a user.');
+    }
+    if (!award_type) {
+      errors.push('Must select an award type.');
+    }
+    if (!recipient_email) {
+      errors.push('Recipient email cannot be blank.');
+    }
+
+    this.setState({
+      errors
+    });
+
+    if(errors.length === 0) {
+      this.sendAward(event);
+    }
   }
 
   sendAward(event) {
@@ -75,7 +103,7 @@ class SendAward extends Component {
           <h4 className="text-center spacer-bottom">Send an Award</h4>
         </div>
         {this.renderErrors()}
-          <form className="col-md-4 col-md-offset-4" onSubmit={this.sendAward}>
+          <form className="col-md-4 col-md-offset-4" onSubmit={this.validateForm}>
             <label htmlFor="awardType" className="col-form-label">Award Type:</label>
             <div className="form-check" name="awardType">
               <label className="form-check-label">
