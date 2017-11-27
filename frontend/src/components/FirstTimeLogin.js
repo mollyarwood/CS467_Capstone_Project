@@ -38,6 +38,10 @@ class FirstTimeLogin extends Component {
       errors.push('Name cannot be blank')
     }
 
+    if (this.state.signitureFile == null) {
+      errors.push('Must Upload a Signature');
+    }
+
     this.setState({
       errors
     });
